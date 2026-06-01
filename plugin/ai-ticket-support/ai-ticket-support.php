@@ -1,10 +1,10 @@
 <?php
 /**
  * Plugin Name: WP AI Support
- * Plugin URI:  https://wpaisupport.ir
+ * Plugin URI:  http://wpaisupport.ir/
  * Description: پشتیبانی هوشمند برای وردپرس — مدیریت تیکت با هوش مصنوعی و پایگاه دانش
  * Version:     1.0.0
- * Author:      Mehmet Gandomi
+ * Author:      Mohamad Gandomi
  * Text Domain: wp-ai-support
  * Domain Path: /languages
  * Requires at least: 6.0
