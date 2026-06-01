@@ -1,567 +1,531 @@
 #!/usr/bin/env python3
-"""Generate WP AI Support Persian help PDF."""
+"""Generate WP AI Support Persian help PDF via WeasyPrint (proper RTL + font)."""
 
-import arabic_reshaper
-from bidi.algorithm import get_display
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import mm
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.lib.enums import TA_RIGHT, TA_CENTER
-from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    HRFlowable, KeepTogether
-)
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.lib import colors
+import base64, pathlib
+from weasyprint import HTML, CSS
 
-FONT_PATH = "website/fonts/Ravi-VF.ttf"
+FONT_PATH = pathlib.Path("website/fonts/Ravi-VF.ttf")
 OUTPUT    = "WP-AI-Support-Help-FA.pdf"
-BRAND     = colors.HexColor("#0068ff")
-BRAND_BG  = colors.HexColor("#e8f1ff")
-WARN_BG   = colors.HexColor("#fffbeb")
-WARN_BORDER = colors.HexColor("#f59e0b")
-TIP_BG    = colors.HexColor("#f0fdf4")
-TIP_BORDER = colors.HexColor("#22c55e")
-GRAY_100  = colors.HexColor("#f3f4f6")
-GRAY_200  = colors.HexColor("#e5e7eb")
-GRAY_700  = colors.black
-GRAY_800  = colors.black
-GRAY_900  = colors.black
 
-pdfmetrics.registerFont(TTFont("Ravi", FONT_PATH))
+font_b64 = base64.b64encode(FONT_PATH.read_bytes()).decode()
 
+HTML_CONTENT = f"""<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<style>
+@font-face {{
+  font-family: 'Ravi';
+  src: url('data:font/truetype;base64,{font_b64}') format('truetype');
+  font-weight: 100 900;
+}}
 
-def fa(text):
-    """Reshape + apply bidi so Persian renders correctly in PDFs."""
-    reshaped = arabic_reshaper.reshape(text)
-    return get_display(reshaped)
+* {{
+  font-family: 'Ravi', sans-serif;
+  color: #000000;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}}
 
+@page {{
+  size: A4;
+  margin: 18mm 20mm 18mm 20mm;
+  @bottom-center {{
+    content: counter(page);
+    font-family: 'Ravi', sans-serif;
+    font-size: 10px;
+    color: #000;
+  }}
+}}
 
-def make_styles():
-    def ps(name, **kwargs):
-        kwargs.setdefault("fontName", "Ravi")
-        kwargs.setdefault("textColor", colors.black)
-        return ParagraphStyle(name, **kwargs)
+body {{
+  direction: rtl;
+  font-size: 12px;
+  line-height: 2;
+  color: #000000;
+  background: #fff;
+}}
 
-    title_style = ps("title", alignment=TA_CENTER, fontSize=26, textColor=GRAY_900,
-                     leading=32, spaceAfter=4, spaceBefore=0)
-    subtitle_style = ps("subtitle", alignment=TA_CENTER, fontSize=13,
-                        textColor=colors.black, leading=20, spaceAfter=2)
-    h2_style = ps("h2", alignment=TA_RIGHT, fontSize=18, textColor=GRAY_900,
-                  leading=26, spaceBefore=18, spaceAfter=6)
-    h3_style = ps("h3", alignment=TA_RIGHT, fontSize=13, textColor=GRAY_800,
-                  leading=22, spaceBefore=12, spaceAfter=4)
-    body_style = ps("body", alignment=TA_RIGHT, fontSize=11, textColor=GRAY_700,
-                    leading=22, spaceAfter=6)
-    note_style = ps("note", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.black, leading=20)
-    warn_style = ps("warn", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.black, leading=20)
-    tip_style = ps("tip", alignment=TA_RIGHT, fontSize=10,
-                   textColor=colors.black, leading=20)
-    li_style = ps("li", alignment=TA_RIGHT, fontSize=11, textColor=GRAY_700,
-                  leading=22, spaceAfter=3, rightIndent=14)
-    code_style = ps("code", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.black, leading=18,
-                    backColor=GRAY_100, borderPadding=4)
-    footer_style = ps("footer", alignment=TA_CENTER, fontSize=9,
-                      textColor=colors.black, leading=16)
-    return {
-        "title": title_style, "subtitle": subtitle_style,
-        "h2": h2_style, "h3": h3_style, "body": body_style,
-        "note": note_style, "warn": warn_style, "tip": tip_style,
-        "li": li_style, "code": code_style, "footer": footer_style,
-    }
+/* ── Cover ── */
+.cover {{
+  text-align: center;
+  padding-top: 60mm;
+  page-break-after: always;
+}}
+.cover h1 {{
+  font-size: 32px;
+  font-weight: 900;
+  color: #000;
+  margin-bottom: 6px;
+}}
+.cover .sub {{
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 4px;
+}}
+.cover .bar {{
+  display: inline-block;
+  background: #0068ff;
+  color: #fff !important;
+  padding: 10px 40px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 20px;
+  width: 100%;
+}}
+.cover .bar * {{ color: #fff !important; }}
 
+/* ── Typography ── */
+h2 {{
+  font-size: 20px;
+  font-weight: 800;
+  color: #000;
+  margin: 28px 0 6px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}}
+h3 {{
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin: 20px 0 6px;
+}}
+p {{
+  font-size: 12px;
+  color: #000;
+  line-height: 2;
+  margin-bottom: 8px;
+}}
+ul, ol {{
+  margin: 8px 0 10px 0;
+  padding-right: 20px;
+}}
+li {{
+  font-size: 12px;
+  color: #000;
+  line-height: 2;
+  margin-bottom: 2px;
+}}
+code {{
+  font-family: 'Ravi', monospace;
+  font-size: 11px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #000;
+  direction: ltr;
+  display: inline-block;
+}}
+hr {{
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 4px 0 10px;
+}}
 
-W = 170 * mm  # usable page width (A4 210mm - 20mm margins x2)
+/* ── Note boxes ── */
+.note {{
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 11px;
+  line-height: 2;
+  margin: 12px 0;
+  display: block;
+}}
+.note-info  {{ background: #e8f1ff; border-right: 4px solid #0068ff; color: #000; }}
+.note-warn  {{ background: #fffbeb; border-right: 4px solid #f59e0b; color: #000; }}
+.note-tip   {{ background: #f0fdf4; border-right: 4px solid #22c55e; color: #000; }}
+.note * {{ color: #000 !important; }}
 
+/* ── Step rows ── */
+.steps {{ margin: 12px 0; }}
+.step {{
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  align-items: flex-start;
+  flex-direction: row-reverse;
+}}
+.step-badge {{
+  min-width: 26px;
+  height: 26px;
+  background: #0068ff;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}}
+.step-content strong {{
+  display: block;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 2px;
+}}
+.step-content p {{
+  margin: 0;
+  color: #000;
+}}
 
-def note_box(text, style_name, bg, border_color, s):
-    icon = {"note": "ℹ", "warn": "⚠", "tip": "✓"}[style_name]
-    p = Paragraph(fa(f"{icon}  {text}"), s[style_name])
-    t = Table([[p]], colWidths=[W])
-    t.setStyle(TableStyle([
-        ("BACKGROUND",    (0, 0), (-1, -1), bg),
-        ("LINEAFTER",     (0, 0), (0, -1),  3, border_color),
-        ("TOPPADDING",    (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
-        ("LEFTPADDING",   (0, 0), (-1, -1), 12),
-        ("RIGHTPADDING",  (0, 0), (-1, -1), 12),
-    ]))
-    return t
+/* ── Table ── */
+table {{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin: 12px 0;
+}}
+th {{
+  background: #0068ff;
+  color: #fff !important;
+  font-weight: 700;
+  text-align: right;
+  padding: 7px 10px;
+}}
+td {{
+  text-align: right;
+  padding: 6px 10px;
+  color: #000;
+  border-bottom: 1px solid #e5e7eb;
+}}
+tr:nth-child(even) td {{ background: #f9fafb; }}
 
+/* ── Footer ── */
+.footer {{
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 10px;
+  color: #000;
+}}
+</style>
+</head>
+<body>
 
-def bullet(text, s, num=None):
-    prefix = f"{num}." if num else "•"
-    return Paragraph(fa(f"{prefix}  {text}"), s["li"])
+<!-- ═══ COVER ═══ -->
+<div class="cover">
+  <h1>WP AI Support</h1>
+  <p class="sub">راهنمای کامل افزونه</p>
+  <p class="sub">پشتیبانی هوشمند برای وردپرس — مدیریت تیکت با هوش مصنوعی</p>
+  <div class="bar">wpaisupport.ir</div>
+</div>
 
+<!-- ═══ 1. معرفی ═══ -->
+<h2>۱. معرفی</h2>
+<hr>
+<p>
+  <strong>WP AI Support</strong> یک افزونه وردپرس برای مدیریت حرفه‌ای تیکت‌های پشتیبانی است.
+  این افزونه با کمک هوش مصنوعی، پایگاه دانش شما را می‌خواند و به‌طور خودکار به سوالات مشتریان پاسخ می‌دهد.
+</p>
+<p>
+  اگر هوش مصنوعی پاسخ مناسبی پیدا کند، مشتری آن را می‌بیند و می‌تواند تأیید کند یا از پشتیبان انسانی کمک بخواهد.
+  اگر پاسخی یافت نشود، تیکت به صف کارشناسان ارجاع می‌شود.
+</p>
+<div class="note note-info">
+  ℹ این افزونه به <strong>WordPress 6.0</strong> یا بالاتر و <strong>PHP 8.1</strong> یا بالاتر نیاز دارد.
+</div>
 
-def section_divider():
-    return HRFlowable(width="100%", thickness=1, color=GRAY_200, spaceAfter=4, spaceBefore=4)
+<h3>قابلیت‌های اصلی</h3>
+<ul>
+  <li>پاسخ‌دهی هوشمند بر اساس پایگاه دانش اختصاصی شما</li>
+  <li>مدیریت تیکت با صف، اولویت، وضعیت و جستجو</li>
+  <li>پایگاه دانش با دسته‌بندی و پاسخ‌های آماده</li>
+  <li>پیوست فایل و تصویر در تیکت‌ها</li>
+  <li>شخصی‌سازی رنگ برند</li>
+  <li>پنل جداگانه برای کاربر و ادمین</li>
+  <li>پشتیبانی کامل از زبان فارسی و RTL</li>
+</ul>
 
+<!-- ═══ 2. نصب ═══ -->
+<h2>۲. نصب افزونه</h2>
+<hr>
+<p>افزونه WP AI Support را از سایت <strong>راستچین</strong> تهیه کنید. پس از دریافت فایل zip، مراحل زیر را دنبال کنید:</p>
 
-def build_pdf():
-    s = make_styles()
-    doc = SimpleDocTemplate(
-        OUTPUT, pagesize=A4,
-        rightMargin=20 * mm, leftMargin=20 * mm,
-        topMargin=18 * mm, bottomMargin=18 * mm,
-        title="WP AI Support — راهنمای کامل",
-        author="wpaisupport.ir",
-    )
+<div class="steps">
+  <div class="step">
+    <div class="step-badge">۱</div>
+    <div class="step-content">
+      <strong>وارد پیشخوان وردپرس شوید</strong>
+      <p>از منو به <code>افزونه‌ها ← افزودن</code> بروید.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge">۲</div>
+    <div class="step-content">
+      <strong>آپلود فایل zip</strong>
+      <p>روی «بارگذاری افزونه» کلیک کنید، فایل zip را انتخاب و آپلود کنید.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge">۳</div>
+    <div class="step-content">
+      <strong>فعال‌سازی</strong>
+      <p>روی «فعال‌سازی افزونه» کلیک کنید. افزونه جداول پایگاه داده را به‌صورت خودکار می‌سازد.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-badge">۴</div>
+    <div class="step-content">
+      <strong>دسترسی به پنل</strong>
+      <p>پنل کاربر: <code>yoursite.com/helpdesk</code></p>
+      <p>پنل ادمین: <code>yoursite.com/helpdesk-admin</code></p>
+    </div>
+  </div>
+</div>
 
-    story = []
+<div class="note note-warn">
+  ⚠ برای دسترسی به پنل ادمین باید دسترسی <strong>Administrator</strong> در وردپرس داشته باشید.
+</div>
 
-    # ── Cover ────────────────────────────────────────────────────────────────────
-    story.append(Spacer(1, 30 * mm))
-    story.append(Paragraph("WP AI Support", s["title"]))
-    story.append(Spacer(1, 4 * mm))
-    story.append(Paragraph(fa("راهنمای کامل افزونه"), s["subtitle"]))
-    story.append(Spacer(1, 2 * mm))
-    story.append(Paragraph(fa("پشتیبانی هوشمند برای وردپرس — مدیریت تیکت با هوش مصنوعی"), s["subtitle"]))
-    story.append(Spacer(1, 8 * mm))
+<!-- ═══ 3. راه‌اندازی سریع ═══ -->
+<h2>۳. راه‌اندازی سریع</h2>
+<hr>
+<p>پس از نصب، این مسیر سریع‌ترین راه برای راه‌اندازی کامل افزونه است:</p>
+<ol>
+  <li>به <strong>پایگاه دانش ← دسته‌بندی‌ها</strong> بروید و دسته‌های مرتبط با کسب‌وکارتان را بسازید.</li>
+  <li>در <strong>پایگاه دانش ← پاسخ‌های آماده</strong>، پاسخ سوالات رایج مشتریانتان را وارد کنید.</li>
+  <li>به <strong>تنظیمات</strong> بروید و رنگ برند خود را تنظیم کنید.</li>
+  <li>در تنظیمات، کلید API GapGPT را وارد کنید و پاسخ هوشمند را فعال کنید.</li>
+  <li>لینک <code>yoursite.com/helpdesk</code> را به مشتریانتان بدهید.</li>
+</ol>
+<div class="note note-tip">
+  ✓ هرچه پایگاه دانش شما غنی‌تر باشد، کیفیت پاسخ‌های هوش مصنوعی بهتر است. از همان ابتدا پاسخ‌های دقیق و کامل وارد کنید.
+</div>
 
-    cover_bar = Table([[ Paragraph(fa("wpaisupport.ir"), s["subtitle"]) ]], colWidths=[W])
-    cover_bar.setStyle(TableStyle([
-        ("BACKGROUND",    (0, 0), (-1, -1), BRAND),
-        ("TOPPADDING",    (0, 0), (-1, -1), 10),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-        ("TEXTCOLOR",     (0, 0), (-1, -1), colors.white),
-    ]))
-    story.append(cover_bar)
-    story.append(Spacer(1, 30 * mm))
+<!-- ═══ 4. رنگ برند ═══ -->
+<h2>۴. رنگ برند</h2>
+<hr>
+<p>
+  در صفحه <strong>تنظیمات</strong> می‌توانید رنگ برند افزونه را تغییر دهید.
+  این رنگ روی دکمه‌ها، لینک‌ها و عناصر اصلی رابط کاربری اعمال می‌شود.
+</p>
+<p>
+  کد رنگ را به فرمت HEX وارد کنید (مثلاً <code>#0068ff</code>).
+  پس از ذخیره، رنگ جدید برای همه کاربران نمایش داده می‌شود.
+</p>
+<div class="note note-info">
+  ℹ رنگ پیش‌فرض <code>#0068ff</code> است. برای بهترین تجربه، از رنگ‌های با کنتراست کافی استفاده کنید.
+</div>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 1. معرفی
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۱. معرفی"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("WP AI Support یک افزونه وردپرس برای مدیریت حرفه‌ای تیکت‌های پشتیبانی است. "
-           "این افزونه با کمک هوش مصنوعی، پایگاه دانش شما را می‌خواند و به طور خودکار "
-           "به سوالات مشتریان پاسخ می‌دهد."), s["body"]))
-    story.append(Paragraph(
-        fa("اگر هوش مصنوعی پاسخ مناسبی پیدا کند، مشتری آن را می‌بیند و می‌تواند تأیید کند "
-           "یا از پشتیبان انسانی کمک بخواهد. اگر پاسخی یافت نشود، تیکت به صف کارشناسان "
-           "ارجاع می‌شود."), s["body"]))
-    story.append(Spacer(1, 2 * mm))
-    story.append(note_box(
-        "این افزونه به WordPress 6.0 یا بالاتر و PHP 8.1 یا بالاتر نیاز دارد.",
-        "note", BRAND_BG, BRAND, s))
-    story.append(Spacer(1, 4 * mm))
+<!-- ═══ 5. تنظیمات هوش مصنوعی ═══ -->
+<h2>۵. تنظیمات هوش مصنوعی</h2>
+<hr>
 
-    story.append(Paragraph(fa("قابلیت‌های اصلی"), s["h3"]))
-    features = [
-        "پاسخ‌دهی هوشمند بر اساس پایگاه دانش اختصاصی شما",
-        "مدیریت تیکت با صف، اولویت، وضعیت و جستجو",
-        "پایگاه دانش با دسته‌بندی و پاسخ‌های آماده",
-        "پیوست فایل و تصویر در تیکت‌ها",
-        "شخصی‌سازی رنگ برند",
-        "پنل جداگانه برای کاربر و ادمین",
-        "پشتیبانی کامل از زبان فارسی و RTL",
-    ]
-    for f in features:
-        story.append(bullet(f, s))
-    story.append(Spacer(1, 6 * mm))
+<h3>پاسخ هوشمند</h3>
+<p>
+  با فعال کردن این گزینه، هنگام ثبت هر تیکت جدید، هوش مصنوعی پایگاه دانش را بررسی می‌کند
+  و اگر پاسخ مناسبی یافت، آن را به کاربر نشان می‌دهد.
+</p>
+<div class="note note-warn">
+  ⚠ برای فعال کردن پاسخ هوشمند، ابتدا باید یک ارائه‌دهنده هوش مصنوعی را از بخش یکپارچه‌سازی فعال کنید.
+</div>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 2. نصب
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۲. نصب افزونه"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("افزونه WP AI Support را از سایت راستچین تهیه کنید. "
-           "پس از دریافت فایل zip، مراحل زیر را دنبال کنید:"), s["body"]))
-    story.append(Spacer(1, 2 * mm))
+<h3>حالت پاسخ‌دهی</h3>
+<ul>
+  <li><strong>فقط پایگاه دانش:</strong> هوش مصنوعی فقط از اطلاعات پایگاه دانش شما استفاده می‌کند. اگر پاسخ نباشد، تیکت به کارشناس ارجاع می‌شود.</li>
+  <li><strong>پایگاه دانش + دانش هوش مصنوعی:</strong> اگر پایگاه دانش کافی نبود، هوش مصنوعی از دانش عمومی خودش هم کمک می‌گیرد.</li>
+</ul>
 
-    steps = [
-        ("۱", "وارد پیشخوان وردپرس شوید",
-         "از منو به «افزونه‌ها ← افزودن» بروید."),
-        ("۲", "آپلود فایل zip",
-         "روی «بارگذاری افزونه» کلیک کنید، فایل zip را انتخاب و آپلود کنید."),
-        ("۳", "فعال‌سازی",
-         "روی «فعال‌سازی افزونه» کلیک کنید. افزونه جداول پایگاه داده را به صورت خودکار می‌سازد."),
-        ("۴", "دسترسی به پنل",
-         "پنل کاربر: yoursite.com/helpdesk\nپنل ادمین: yoursite.com/helpdesk-admin"),
-    ]
-    for num, title, desc in steps:
-        badge_style = ParagraphStyle(
-            "badge", alignment=TA_CENTER, fontSize=12, textColor=colors.white,
-            fontName="Ravi", leading=18, parent=None,
-        )
-        badge_cell = Paragraph(fa(num), badge_style)
-        badge_table = Table([[badge_cell]], colWidths=[8 * mm], rowHeights=[8 * mm])
-        badge_table.setStyle(TableStyle([
-            ("BACKGROUND",    (0, 0), (-1, -1), BRAND),
-            ("TOPPADDING",    (0, 0), (-1, -1), 0),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
-            ("LEFTPADDING",   (0, 0), (-1, -1), 0),
-            ("RIGHTPADDING",  (0, 0), (-1, -1), 0),
-        ]))
-        title_p = Paragraph(fa(title), ParagraphStyle(
-            "steptitle", fontName="Ravi", fontSize=11, textColor=colors.black,
-            alignment=TA_RIGHT, leading=20, parent=None,
-        ))
-        desc_p = Paragraph(fa(desc), s["body"])
-        inner_w = W - 15 * mm
-        content = Table([[desc_p]], colWidths=[inner_w])
-        row_table = Table(
-            [[badge_table, Table([[title_p], [content]], colWidths=[inner_w])]],
-            colWidths=[15 * mm, inner_w]
-        )
-        row_table.setStyle(TableStyle([
-            ("VALIGN",        (0, 0), (-1, -1), "TOP"),
-            ("TOPPADDING",    (0, 0), (-1, -1), 2),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
-            ("LEFTPADDING",   (0, 0), (-1, -1), 0),
-            ("RIGHTPADDING",  (0, 0), (-1, -1), 0),
-        ]))
-        story.append(row_table)
-        story.append(Spacer(1, 2 * mm))
+<h3>تعداد پاسخ ارسالی (TOP K)</h3>
+<p>
+  سیستم ابتدا پایگاه دانش را بر اساس کلیدواژه‌های تیکت امتیازدهی می‌کند، سپس بهترین N پاسخ را به هوش مصنوعی می‌فرستد.
+  عدد بزرگ‌تر = پاسخ دقیق‌تر ولی هزینه بیشتر. پیش‌فرض: ۴
+</p>
 
-    story.append(Spacer(1, 2 * mm))
-    story.append(note_box(
-        "برای دسترسی به پنل ادمین باید دسترسی Administrator در وردپرس داشته باشید.",
-        "warn", WARN_BG, WARN_BORDER, s))
-    story.append(Spacer(1, 6 * mm))
+<h3>حداکثر طول هر پاسخ (MAX BODY)</h3>
+<p>
+  بدنه هر پاسخ آماده تا این تعداد کاراکتر به هوش مصنوعی فرستاده می‌شود.
+  عدد کمتر = هزینه پایین‌تر. پیش‌فرض: ۴۰۰ کاراکتر
+</p>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 3. راه‌اندازی سریع
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۳. راه‌اندازی سریع"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("پس از نصب، این مسیر سریع‌ترین راه برای راه‌اندازی کامل افزونه است:"), s["body"]))
+<!-- ═══ 6. GapGPT ═══ -->
+<h2>۶. ارائه‌دهنده: GapGPT</h2>
+<hr>
+<p>
+  WP AI Support از سرویس <strong>GapGPT</strong> پشتیبانی می‌کند.
+  GapGPT یک سرویس ایرانی هوش مصنوعی با پشتیبانی کامل از زبان فارسی است و به مدل‌های مختلف از جمله
+  GPT، Claude، Gemini و مدل‌های بومی دسترسی دارد.
+</p>
 
-    quick_steps = [
-        "به «پایگاه دانش ← دسته‌بندی‌ها» بروید و دسته‌های مرتبط با کسب‌وکارتان را بسازید.",
-        "در «پایگاه دانش ← پاسخ‌های آماده»، پاسخ سوالات رایج مشتریانتان را وارد کنید.",
-        "به «تنظیمات» بروید و رنگ برند خود را تنظیم کنید.",
-        "در تنظیمات، کلید API GapGPT را وارد کنید و پاسخ هوشمند را فعال کنید.",
-        "لینک yoursite.com/helpdesk را به مشتریانتان بدهید.",
-    ]
-    for i, step in enumerate(quick_steps, 1):
-        story.append(bullet(step, s, num=i))
+<h3>دریافت کلید API</h3>
+<ol>
+  <li>به <code>gapgpt.app/platform-v2/tokens</code> بروید.</li>
+  <li>یک توکن جدید بسازید.</li>
+  <li>توکن را کپی کنید و در تنظیمات افزونه (بخش یکپارچه‌سازی) وارد کنید.</li>
+</ol>
 
-    story.append(Spacer(1, 3 * mm))
-    story.append(note_box(
-        "هرچه پایگاه دانش شما غنی‌تر باشد، کیفیت پاسخ‌های هوش مصنوعی بهتر است. "
-        "از همان ابتدا پاسخ‌های دقیق و کامل وارد کنید.",
-        "tip", TIP_BG, TIP_BORDER, s))
-    story.append(Spacer(1, 6 * mm))
+<h3>انتخاب مدل</h3>
+<p>پس از وارد کردن کلید، می‌توانید مدل هوش مصنوعی را انتخاب کنید:</p>
+<ul>
+  <li><code>gapgpt-qwen-3.5</code> — سریع و اقتصادی (پیش‌فرض)</li>
+  <li><code>gpt-4o</code> — دقیق‌تر، برای پایگاه دانش پیچیده</li>
+  <li><code>gpt-4o-mini</code> — تعادل بین سرعت و دقت</li>
+</ul>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 4. رنگ برند
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۴. رنگ برند"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("در صفحه «تنظیمات» می‌توانید رنگ برند افزونه را تغییر دهید. "
-           "این رنگ روی دکمه‌ها، لینک‌ها و عناصر اصلی رابط کاربری اعمال می‌شود."), s["body"]))
-    story.append(Paragraph(
-        fa("کد رنگ را به فرمت HEX وارد کنید (مثلاً #0068ff). تغییر رنگ بلافاصله در پیش‌نمایش "
-           "قابل مشاهده است. پس از ذخیره، رنگ جدید برای همه کاربران نمایش داده می‌شود."), s["body"]))
-    story.append(note_box(
-        "رنگ پیش‌فرض #0068ff است. برای بهترین تجربه، از رنگ‌های با کنتراست کافی استفاده کنید.",
-        "note", BRAND_BG, BRAND, s))
-    story.append(Spacer(1, 6 * mm))
+<h3>تست اتصال</h3>
+<p>
+  پس از وارد کردن کلید API، روی دکمه <strong>تست اتصال</strong> کلیک کنید.
+  اگر اتصال موفق بود، می‌توانید ارائه‌دهنده را فعال کنید.
+</p>
+<div class="note note-tip">
+  ✓ اگر پایگاه دانش شما شامل مراحل دقیق و اعداد مشخص است، از مدل‌های قوی‌تر مثل <code>gpt-4o</code> استفاده کنید.
+</div>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 5. تنظیمات هوش مصنوعی
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۵. تنظیمات هوش مصنوعی"), s["h2"]))
-    story.append(section_divider())
+<!-- ═══ 7. دسته‌بندی‌ها ═══ -->
+<h2>۷. پایگاه دانش — دسته‌بندی‌ها</h2>
+<hr>
+<p>
+  دسته‌بندی‌ها به شما کمک می‌کنند پایگاه دانش را سازماندهی کنید.
+  هر دسته‌بندی یک عنوان و توضیحات دارد.
+</p>
+<p>
+  وقتی مشتری تیکت ثبت می‌کند، می‌تواند دسته‌بندی مرتبط را انتخاب کند.
+</p>
 
-    story.append(Paragraph(fa("پاسخ هوشمند"), s["h3"]))
-    story.append(Paragraph(
-        fa("با فعال کردن این گزینه، هنگام ثبت هر تیکت جدید، هوش مصنوعی پایگاه دانش را "
-           "بررسی می‌کند و اگر پاسخ مناسبی یافت، آن را به کاربر نشان می‌دهد."), s["body"]))
-    story.append(note_box(
-        "برای فعال کردن پاسخ هوشمند، ابتدا باید یک ارائه‌دهنده هوش مصنوعی را "
-        "از بخش یکپارچه‌سازی فعال کنید.",
-        "warn", WARN_BG, WARN_BORDER, s))
-    story.append(Spacer(1, 3 * mm))
+<h3>مدیریت دسته‌بندی‌ها</h3>
+<ul>
+  <li>از منو <strong>پایگاه دانش ← دسته‌بندی‌ها</strong> وارد شوید.</li>
+  <li>با دکمه «افزودن دسته» دسته جدید بسازید.</li>
+  <li>برای ویرایش یا حذف، از آیکون‌های کنار هر دسته استفاده کنید.</li>
+  <li>حذف دسته، پاسخ‌های آماده آن دسته را حذف نمی‌کند — فقط دسته‌بندی آن‌ها برداشته می‌شود.</li>
+</ul>
 
-    story.append(Paragraph(fa("حالت پاسخ‌دهی"), s["h3"]))
-    story.append(bullet(
-        "فقط پایگاه دانش: هوش مصنوعی فقط از اطلاعات پایگاه دانش شما استفاده می‌کند. "
-        "اگر پاسخ نباشد، تیکت به کارشناس ارجاع می‌شود.", s))
-    story.append(bullet(
-        "پایگاه دانش + دانش هوش مصنوعی: اگر پایگاه دانش کافی نبود، "
-        "هوش مصنوعی از دانش عمومی خودش هم کمک می‌گیرد.", s))
-    story.append(Spacer(1, 3 * mm))
+<!-- ═══ 8. پاسخ‌های آماده ═══ -->
+<h2>۸. پاسخ‌های آماده</h2>
+<hr>
+<p>
+  پاسخ‌های آماده همان پایگاه دانش شما هستند. هوش مصنوعی این پاسخ‌ها را می‌خواند
+  و بر اساس آن‌ها به کاربر جواب می‌دهد.
+</p>
 
-    story.append(Paragraph(fa("تعداد پاسخ ارسالی (TOP K)"), s["h3"]))
-    story.append(Paragraph(
-        fa("سیستم ابتدا پایگاه دانش را بر اساس کلیدواژه‌های تیکت امتیازدهی می‌کند، سپس بهترین N "
-           "پاسخ را به هوش مصنوعی می‌فرستد. عدد بزرگ‌تر = پاسخ دقیق‌تر ولی هزینه بیشتر. "
-           "پیش‌فرض: ۴"), s["body"]))
+<h3>نکات مهم برای نوشتن پاسخ‌های مؤثر</h3>
+<ul>
+  <li>مراحل را شماره‌گذاری کنید — هوش مصنوعی همه مراحل را دقیقاً بازتولید می‌کند.</li>
+  <li>اعداد و مشخصات دقیق را عیناً بنویسید.</li>
+  <li>هر پاسخ یک موضوع مشخص داشته باشد.</li>
+  <li>از HTML ویرایشگر استفاده کنید تا پاسخ‌ها خوانا باشند.</li>
+</ul>
 
-    story.append(Paragraph(fa("حداکثر طول هر پاسخ (MAX BODY)"), s["h3"]))
-    story.append(Paragraph(
-        fa("بدنه هر پاسخ آماده تا این تعداد کاراکتر به هوش مصنوعی فرستاده می‌شود. "
-           "عدد کمتر = هزینه پایین‌تر. پیش‌فرض: ۴۰۰ کاراکتر"), s["body"]))
-    story.append(Spacer(1, 6 * mm))
+<div class="note note-info">
+  ℹ هوش مصنوعی همیشه کل پایگاه دانش را بررسی می‌کند — حتی اگر کاربر دسته اشتباهی انتخاب کرده باشد.
+</div>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 6. GapGPT
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۶. ارائه‌دهنده: GapGPT"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("WP AI Support در حال حاضر از سرویس GapGPT پشتیبانی می‌کند. GapGPT یک سرویس "
-           "ایرانی هوش مصنوعی با پشتیبانی کامل از زبان فارسی است و به مدل‌های مختلف از جمله "
-           "GPT، Claude، Gemini و مدل‌های بومی دسترسی دارد."), s["body"]))
+<!-- ═══ 9. تیکت کاربر ═══ -->
+<h2>۹. تیکت از دید کاربر</h2>
+<hr>
+<p>
+  مشتریان از آدرس <code>yoursite.com/helpdesk</code> وارد می‌شوند.
+  برای ثبت تیکت باید در وردپرس حساب کاربری داشته باشند.
+</p>
 
-    story.append(Paragraph(fa("دریافت کلید API"), s["h3"]))
-    api_steps = [
-        "به gapgpt.app/platform-v2/tokens بروید.",
-        "یک توکن جدید بسازید.",
-        "توکن را کپی کنید و در تنظیمات افزونه (بخش یکپارچه‌سازی) وارد کنید.",
-    ]
-    for i, step in enumerate(api_steps, 1):
-        story.append(bullet(step, s, num=i))
+<h3>ثبت تیکت جدید</h3>
+<ol>
+  <li>روی «تیکت جدید» کلیک کنید.</li>
+  <li>عنوان، دسته‌بندی و اولویت را مشخص کنید.</li>
+  <li>متن سوال را بنویسید (می‌توانید فایل پیوست کنید).</li>
+  <li>روی «ارسال» کلیک کنید.</li>
+</ol>
 
-    story.append(Paragraph(fa("انتخاب مدل"), s["h3"]))
-    story.append(Paragraph(fa("پس از وارد کردن کلید، می‌توانید مدل هوش مصنوعی را انتخاب کنید:"), s["body"]))
-    models = [
-        "gapgpt-qwen-3.5 — سریع و اقتصادی (پیش‌فرض)",
-        "gpt-4o — دقیق‌تر، برای پایگاه دانش پیچیده",
-        "gpt-4o-mini — تعادل بین سرعت و دقت",
-    ]
-    for m in models:
-        story.append(bullet(m, s))
+<p>اگر هوش مصنوعی پاسخی پیدا کند، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود و دو گزینه دارد:</p>
+<ul>
+  <li><strong>مشکل حل شد:</strong> تیکت با پاسخ هوشمند بسته می‌شود.</li>
+  <li><strong>ادامه با پشتیبان:</strong> پیام ارجاع به کارشناس در چت ظاهر می‌شود.</li>
+</ul>
 
-    story.append(Paragraph(fa("تست اتصال"), s["h3"]))
-    story.append(Paragraph(
-        fa("پس از وارد کردن کلید API، روی دکمه «تست اتصال» کلیک کنید. "
-           "اگر اتصال موفق بود، می‌توانید ارائه‌دهنده را فعال کنید."), s["body"]))
-    story.append(note_box(
-        "اگر پایگاه دانش شما شامل مراحل دقیق و اعداد مشخص است، از مدل‌های قوی‌تر مثل "
-        "gpt-4o استفاده کنید تا هیچ جزئیاتی حذف نشود.",
-        "tip", TIP_BG, TIP_BORDER, s))
-    story.append(Spacer(1, 6 * mm))
+<!-- ═══ 10. مدیریت ادمین ═══ -->
+<h2>۱۰. مدیریت تیکت (ادمین)</h2>
+<hr>
+<p>ادمین از آدرس <code>yoursite.com/helpdesk-admin</code> وارد پنل مدیریت می‌شود.</p>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 7. پایگاه دانش — دسته‌بندی‌ها
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۷. پایگاه دانش — دسته‌بندی‌ها"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("دسته‌بندی‌ها به شما کمک می‌کنند پایگاه دانش را سازماندهی کنید. "
-           "هر دسته‌بندی یک عنوان و توضیحات دارد."), s["body"]))
-    story.append(Paragraph(
-        fa("وقتی مشتری تیکت ثبت می‌کند، می‌تواند دسته‌بندی مرتبط را انتخاب کند. "
-           "بج «مرتبط» روی هر دسته، تعداد پاسخ‌های آماده آن دسته را نشان می‌دهد."), s["body"]))
+<h3>صف تیکت‌ها</h3>
+<p>تیکت‌ها بر اساس وضعیت نمایش داده می‌شوند. می‌توانید:</p>
+<ul>
+  <li>با کلیک روی تیکت، مکالمه را باز کنید و پاسخ دهید.</li>
+  <li>وضعیت تیکت را تغییر دهید.</li>
+  <li>تیکت را حذف کنید.</li>
+  <li>با فیلتر وضعیت و جستجو، تیکت‌ها را پیدا کنید.</li>
+</ul>
 
-    story.append(Paragraph(fa("مدیریت دسته‌بندی‌ها"), s["h3"]))
-    cat_items = [
-        "از منو «پایگاه دانش ← دسته‌بندی‌ها» وارد شوید.",
-        "با دکمه «افزودن دسته» دسته جدید بسازید.",
-        "برای ویرایش یا حذف، از آیکون‌های کنار هر دسته استفاده کنید.",
-        "حذف دسته، پاسخ‌های آماده آن دسته را حذف نمی‌کند — فقط دسته‌بندی آن‌ها برداشته می‌شود.",
-    ]
-    for item in cat_items:
-        story.append(bullet(item, s))
-    story.append(Spacer(1, 6 * mm))
+<h3>پاسخ دادن</h3>
+<p>
+  در صفحه تیکت، پاسخ خود را تایپ کنید و ارسال کنید.
+  پس از ارسال پاسخ ادمین، وضعیت تیکت به «پاسخ داده شده» تغییر می‌کند.
+</p>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 8. پاسخ‌های آماده
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۸. پاسخ‌های آماده"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("پاسخ‌های آماده همان پایگاه دانش شما هستند. هوش مصنوعی این پاسخ‌ها را می‌خواند "
-           "و بر اساس آن‌ها به کاربر جواب می‌دهد."), s["body"]))
+<!-- ═══ 11. وضعیت‌ها ═══ -->
+<h2>۱۱. وضعیت‌های تیکت</h2>
+<hr>
+<p>هر تیکت یکی از وضعیت‌های زیر را دارد:</p>
+<table>
+  <thead>
+    <tr>
+      <th>وضعیت</th>
+      <th>توضیح</th>
+      <th>نمایش به کاربر</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>بررسی نشده</td><td>تیکت تازه ثبت شده</td><td>در انتظار</td></tr>
+    <tr><td>درحال بررسی</td><td>ادمین در حال بررسی است</td><td>در انتظار</td></tr>
+    <tr><td>در انتظار پاسخ</td><td>ادمین پاسخ داده، منتظر کاربر</td><td>پاسخ داده شده</td></tr>
+    <tr><td>پاسخ داده شده</td><td>کاربر جواب داده</td><td>پاسخ داده شده</td></tr>
+    <tr><td>بسته شده</td><td>تیکت بسته شده</td><td>بسته شده</td></tr>
+    <tr><td>پاسخ هوشمند</td><td>با تأیید کاربر از پاسخ AI بسته شد</td><td>بسته شده</td></tr>
+    <tr><td>اسپم</td><td>تیکت اسپم</td><td>در انتظار</td></tr>
+  </tbody>
+</table>
 
-    story.append(Paragraph(fa("نکات مهم برای نوشتن پاسخ‌های مؤثر"), s["h3"]))
-    tips_items = [
-        "مراحل را شماره‌گذاری کنید — هوش مصنوعی همه مراحل را دقیقاً بازتولید می‌کند.",
-        "اعداد و مشخصات دقیق را عیناً بنویسید.",
-        "هر پاسخ یک موضوع مشخص داشته باشد.",
-        "از HTML ویرایشگر استفاده کنید تا پاسخ‌ها خوانا باشند.",
-    ]
-    for item in tips_items:
-        story.append(bullet(item, s))
+<!-- ═══ 12. جریان هوشمند ═══ -->
+<h2>۱۲. جریان پاسخ هوشمند</h2>
+<hr>
+<p>هنگام ثبت تیکت جدید، اگر هوش مصنوعی فعال باشد، سیستم این مراحل را طی می‌کند:</p>
+<ol>
+  <li>پایگاه دانش بر اساس کلیدواژه‌های تیکت امتیازدهی می‌شود.</li>
+  <li>اگر هیچ همپوشانی کلیدواژه‌ای وجود نداشته باشد، تیکت مستقیم به صف ادمین می‌رود.</li>
+  <li>بهترین N پاسخ (TOP K) به هوش مصنوعی فرستاده می‌شود.</li>
+  <li>هوش مصنوعی یک پاسخ جدید بر اساس پایگاه دانش می‌نویسد.</li>
+  <li>اگر پاسخ تولید شد، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود.</li>
+  <li>اگر پاسخی یافت نشد، پیام ارجاع به کارشناس ظاهر می‌شود.</li>
+</ol>
+<div class="note note-tip">
+  ✓ تیکت‌های حل‌شده با AI در پنل ادمین با بج «پاسخ هوشمند» مشخص می‌شوند.
+</div>
 
-    story.append(Paragraph(fa("فیلتر بر اساس دسته"), s["h3"]))
-    story.append(Paragraph(
-        fa("در صفحه پاسخ‌های آماده، می‌توانید با منوی بالای صفحه فقط پاسخ‌های یک دسته "
-           "خاص را ببینید."), s["body"]))
-    story.append(note_box(
-        "هوش مصنوعی همیشه کل پایگاه دانش را بررسی می‌کند — حتی اگر کاربر دسته اشتباهی "
-        "انتخاب کرده باشد. امتیازدهی کلیدواژه‌ای مرتبط‌ترین پاسخ‌ها را پیدا می‌کند.",
-        "note", BRAND_BG, BRAND, s))
-    story.append(Spacer(1, 6 * mm))
+<!-- ═══ 13. سوالات متداول ═══ -->
+<h2>۱۳. سوالات متداول</h2>
+<hr>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 9. تیکت از دید کاربر
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۹. تیکت از دید کاربر"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("مشتریان از آدرس yoursite.com/helpdesk وارد می‌شوند. "
-           "برای ثبت تیکت باید در وردپرس حساب کاربری داشته باشند."), s["body"]))
+<h3>آیا می‌توانم چند ارائه‌دهنده هوش مصنوعی را همزمان فعال کنم؟</h3>
+<p>خیر. در هر زمان فقط یک ارائه‌دهنده می‌تواند فعال باشد. با فعال کردن یک ارائه‌دهنده، بقیه به‌صورت خودکار غیرفعال می‌شوند.</p>
 
-    story.append(Paragraph(fa("ثبت تیکت جدید"), s["h3"]))
-    user_steps = [
-        "روی «تیکت جدید» کلیک کنید.",
-        "عنوان، دسته‌بندی و اولویت را مشخص کنید.",
-        "متن سوال را بنویسید (می‌توانید فایل پیوست کنید).",
-        "روی «ارسال» کلیک کنید.",
-    ]
-    for i, step in enumerate(user_steps, 1):
-        story.append(bullet(step, s, num=i))
+<h3>اگر کاربر دسته اشتباهی انتخاب کند چه می‌شود؟</h3>
+<p>هیچ مشکلی نیست. سیستم همیشه کل پایگاه دانش را بررسی می‌کند و بر اساس کلیدواژه‌های متن تیکت، مرتبط‌ترین پاسخ‌ها را پیدا می‌کند.</p>
 
-    story.append(Spacer(1, 3 * mm))
-    story.append(Paragraph(
-        fa("اگر هوش مصنوعی پاسخی پیدا کند، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود "
-           "و دو گزینه دارد:"), s["body"]))
-    story.append(bullet("مشکل حل شد: تیکت با پاسخ هوشمند بسته می‌شود.", s))
-    story.append(bullet("ادامه با پشتیبان: پیام ارجاع به کارشناس در چت ظاهر می‌شود.", s))
-    story.append(Spacer(1, 6 * mm))
+<h3>آیا هوش مصنوعی اطلاعات بیرون از پایگاه دانش استفاده می‌کند؟</h3>
+<p>در حالت «فقط پایگاه دانش» خیر — پاسخ کاملاً بر اساس اطلاعات شماست. در حالت «پایگاه دانش + هوش مصنوعی» اگر اطلاعات کافی نباشد، از دانش عمومی هم کمک می‌گیرد.</p>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 10. مدیریت تیکت (ادمین)
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۱۰. مدیریت تیکت (ادمین)"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("ادمین از آدرس yoursite.com/helpdesk-admin وارد پنل مدیریت می‌شود."), s["body"]))
+<h3>آیا پاسخ‌های AI ذخیره می‌شوند؟</h3>
+<p>بله. هر پاسخ AI در پایگاه داده وردپرس ذخیره می‌شود و ادمین می‌تواند آن را در پنل مدیریت ببیند.</p>
 
-    story.append(Paragraph(fa("صف تیکت‌ها"), s["h3"]))
-    story.append(Paragraph(fa("تیکت‌ها بر اساس وضعیت نمایش داده می‌شوند. می‌توانید:"), s["body"]))
-    admin_items = [
-        "با کلیک روی تیکت، مکالمه را باز کنید و پاسخ دهید.",
-        "وضعیت تیکت را تغییر دهید.",
-        "تیکت را حذف کنید.",
-        "با فیلتر وضعیت و جستجو، تیکت‌ها را پیدا کنید.",
-    ]
-    for item in admin_items:
-        story.append(bullet(item, s))
+<h3>آیا کاربران برای ثبت تیکت باید عضو شوند؟</h3>
+<p>بله. کاربران باید حساب کاربری وردپرس داشته باشند و وارد شده باشند تا بتوانند تیکت ثبت کنند.</p>
 
-    story.append(Paragraph(fa("پاسخ دادن"), s["h3"]))
-    story.append(Paragraph(
-        fa("در صفحه تیکت، پاسخ خود را تایپ کنید و ارسال کنید. "
-           "پس از ارسال پاسخ ادمین، وضعیت تیکت به «پاسخ داده شده» تغییر می‌کند."), s["body"]))
-    story.append(Spacer(1, 6 * mm))
+<h3>آیا می‌توانم افزونه را در وردپرس نصب‌شده در زیرشاخه استفاده کنم؟</h3>
+<p>بله. افزونه مسیر وردپرس را به‌صورت خودکار تشخیص می‌دهد و React Router را بر اساس آن تنظیم می‌کند.</p>
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 11. وضعیت‌های تیکت
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۱۱. وضعیت‌های تیکت"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(fa("هر تیکت یکی از وضعیت‌های زیر را دارد:"), s["body"]))
-    story.append(Spacer(1, 3 * mm))
+<div class="footer">
+  <p>WP AI Support — wpaisupport.ir</p>
+  <p>خرید افزونه: www.rtl-theme.com</p>
+</div>
 
-    header_style = ParagraphStyle(
-        "th", fontName="Ravi", fontSize=10, textColor=colors.black,
-        alignment=TA_RIGHT, leading=18, parent=None,
-    )
-    cell_style = ParagraphStyle(
-        "td", fontName="Ravi", fontSize=10, textColor=colors.black,
-        alignment=TA_RIGHT, leading=18, parent=None,
-    )
-    table_data = [
-        [Paragraph(fa("وضعیت"), header_style),
-         Paragraph(fa("توضیح"), header_style),
-         Paragraph(fa("نمایش به کاربر"), header_style)],
-        [Paragraph(fa("بررسی نشده"), cell_style),  Paragraph(fa("تیکت تازه ثبت شده"), cell_style),        Paragraph(fa("در انتظار"), cell_style)],
-        [Paragraph(fa("درحال بررسی"), cell_style),  Paragraph(fa("ادمین در حال بررسی است"), cell_style),   Paragraph(fa("در انتظار"), cell_style)],
-        [Paragraph(fa("در انتظار پاسخ"), cell_style), Paragraph(fa("ادمین پاسخ داده، منتظر کاربر"), cell_style), Paragraph(fa("پاسخ داده شده"), cell_style)],
-        [Paragraph(fa("پاسخ داده شده"), cell_style), Paragraph(fa("کاربر جواب داده"), cell_style),         Paragraph(fa("پاسخ داده شده"), cell_style)],
-        [Paragraph(fa("بسته شده"), cell_style),     Paragraph(fa("تیکت بسته شده"), cell_style),            Paragraph(fa("بسته شده"), cell_style)],
-        [Paragraph(fa("پاسخ هوشمند"), cell_style),  Paragraph(fa("با تأیید کاربر از پاسخ AI بسته شد"), cell_style), Paragraph(fa("بسته شده"), cell_style)],
-        [Paragraph(fa("اسپم"), cell_style),          Paragraph(fa("تیکت اسپم"), cell_style),                Paragraph(fa("در انتظار"), cell_style)],
-    ]
-    col_w = [45 * mm, 80 * mm, 45 * mm]
-    status_table = Table(table_data, colWidths=col_w, repeatRows=1)
-    status_table.setStyle(TableStyle([
-        ("BACKGROUND",    (0, 0), (-1, 0), BRAND),
-        ("TEXTCOLOR",     (0, 0), (-1, 0), colors.white),
-        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [colors.white, GRAY_100]),
-        ("GRID",          (0, 0), (-1, -1), 0.5, GRAY_200),
-        ("TOPPADDING",    (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-        ("LEFTPADDING",   (0, 0), (-1, -1), 8),
-        ("RIGHTPADDING",  (0, 0), (-1, -1), 8),
-        ("VALIGN",        (0, 0), (-1, -1), "MIDDLE"),
-    ]))
-    story.append(status_table)
-    story.append(Spacer(1, 6 * mm))
+</body>
+</html>"""
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # 12. پاسخ هوشمند — جریان کار
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۱۲. جریان پاسخ هوشمند"), s["h2"]))
-    story.append(section_divider())
-    story.append(Paragraph(
-        fa("هنگام ثبت تیکت جدید، اگر هوش مصنوعی فعال باشد، سیستم این مراحل را طی می‌کند:"), s["body"]))
-
-    ai_steps = [
-        "پایگاه دانش بر اساس کلیدواژه‌های تیکت امتیازدهی می‌شود.",
-        "اگر هیچ همپوشانی کلیدواژه‌ای وجود نداشته باشد، تیکت مستقیم به صف ادمین می‌رود.",
-        "بهترین N پاسخ (TOP K) به هوش مصنوعی فرستاده می‌شود.",
-        "هوش مصنوعی یک پاسخ جدید بر اساس پایگاه دانش می‌نویسد.",
-        "اگر پاسخ تولید شد، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود.",
-        "اگر پاسخی یافت نشد، پیام ارجاع به کارشناس ظاهر می‌شود.",
-    ]
-    for i, step in enumerate(ai_steps, 1):
-        story.append(bullet(step, s, num=i))
-
-    story.append(Spacer(1, 3 * mm))
-    story.append(note_box(
-        "تیکت‌های حل‌شده با AI در پنل ادمین با بج «پاسخ هوشمند» مشخص می‌شوند "
-        "و در آمار جداگانه شمرده می‌شوند.",
-        "tip", TIP_BG, TIP_BORDER, s))
-    story.append(Spacer(1, 6 * mm))
-
-    # ══════════════════════════════════════════════════════════════════════════
-    # 13. سوالات متداول
-    # ══════════════════════════════════════════════════════════════════════════
-    story.append(Paragraph(fa("۱۳. سوالات متداول"), s["h2"]))
-    story.append(section_divider())
-
-    faqs = [
-        ("آیا می‌توانم چند ارائه‌دهنده هوش مصنوعی را همزمان فعال کنم؟",
-         "خیر. در هر زمان فقط یک ارائه‌دهنده می‌تواند فعال باشد. با فعال کردن یک ارائه‌دهنده، "
-         "بقیه به صورت خودکار غیرفعال می‌شوند."),
-        ("اگر کاربر دسته اشتباهی انتخاب کند چه می‌شود؟",
-         "هیچ مشکلی نیست. سیستم همیشه کل پایگاه دانش را بررسی می‌کند و بر اساس کلیدواژه‌های "
-         "متن تیکت، مرتبط‌ترین پاسخ‌ها را پیدا می‌کند."),
-        ("آیا هوش مصنوعی اطلاعات بیرون از پایگاه دانش استفاده می‌کند؟",
-         "در حالت «فقط پایگاه دانش» خیر — پاسخ کاملاً بر اساس اطلاعات شماست. "
-         "در حالت «پایگاه دانش + هوش مصنوعی» اگر اطلاعات کافی نباشد، "
-         "از دانش عمومی هم کمک می‌گیرد."),
-        ("آیا پاسخ‌های AI ذخیره می‌شوند؟",
-         "بله. هر پاسخ AI در پایگاه داده وردپرس ذخیره می‌شود و ادمین می‌تواند "
-         "آن را در پنل مدیریت ببیند."),
-        ("آیا کاربران برای ثبت تیکت باید عضو شوند؟",
-         "بله. کاربران باید حساب کاربری وردپرس داشته باشند و وارد شده باشند "
-         "تا بتوانند تیکت ثبت کنند."),
-        ("آیا می‌توانم افزونه را در وردپرس نصب‌شده در زیرشاخه استفاده کنم؟",
-         "بله. افزونه مسیر وردپرس را به صورت خودکار تشخیص می‌دهد و React Router را "
-         "بر اساس آن تنظیم می‌کند."),
-    ]
-    for q, a in faqs:
-        story.append(KeepTogether([
-            Paragraph(fa(q), s["h3"]),
-            Paragraph(fa(a), s["body"]),
-            Spacer(1, 2 * mm),
-        ]))
-
-    # ── Footer ───────────────────────────────────────────────────────────────
-    story.append(Spacer(1, 10 * mm))
-    story.append(HRFlowable(width="100%", thickness=1, color=GRAY_200))
-    story.append(Spacer(1, 4 * mm))
-    story.append(Paragraph(fa("WP AI Support — wpaisupport.ir"), s["footer"]))
-    story.append(Paragraph(fa("خرید افزونه: www.rtl-theme.com"), s["footer"]))
-
-    doc.build(story)
-    print(f"PDF saved: {OUTPUT}")
-
-
-if __name__ == "__main__":
-    build_pdf()
+html = HTML(string=HTML_CONTENT, base_url=".")
+html.write_pdf(OUTPUT)
+print(f"PDF saved: {OUTPUT}")
