@@ -25,9 +25,9 @@ TIP_BG    = colors.HexColor("#f0fdf4")
 TIP_BORDER = colors.HexColor("#22c55e")
 GRAY_100  = colors.HexColor("#f3f4f6")
 GRAY_200  = colors.HexColor("#e5e7eb")
-GRAY_700  = colors.HexColor("#374151")
-GRAY_800  = colors.HexColor("#1f2937")
-GRAY_900  = colors.HexColor("#111827")
+GRAY_700  = colors.black
+GRAY_800  = colors.black
+GRAY_900  = colors.black
 
 pdfmetrics.registerFont(TTFont("Ravi", FONT_PATH))
 
@@ -46,7 +46,7 @@ def make_styles():
     title_style = ps("title", alignment=TA_CENTER, fontSize=26, textColor=GRAY_900,
                      leading=32, spaceAfter=4, spaceBefore=0)
     subtitle_style = ps("subtitle", alignment=TA_CENTER, fontSize=13,
-                        textColor=colors.HexColor("#6b7280"), leading=20, spaceAfter=2)
+                        textColor=colors.black, leading=20, spaceAfter=2)
     h2_style = ps("h2", alignment=TA_RIGHT, fontSize=18, textColor=GRAY_900,
                   leading=26, spaceBefore=18, spaceAfter=6)
     h3_style = ps("h3", alignment=TA_RIGHT, fontSize=13, textColor=GRAY_800,
@@ -54,18 +54,18 @@ def make_styles():
     body_style = ps("body", alignment=TA_RIGHT, fontSize=11, textColor=GRAY_700,
                     leading=22, spaceAfter=6)
     note_style = ps("note", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.HexColor("#1e40af"), leading=20)
+                    textColor=colors.black, leading=20)
     warn_style = ps("warn", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.HexColor("#92400e"), leading=20)
+                    textColor=colors.black, leading=20)
     tip_style = ps("tip", alignment=TA_RIGHT, fontSize=10,
-                   textColor=colors.HexColor("#166534"), leading=20)
+                   textColor=colors.black, leading=20)
     li_style = ps("li", alignment=TA_RIGHT, fontSize=11, textColor=GRAY_700,
                   leading=22, spaceAfter=3, rightIndent=14)
     code_style = ps("code", alignment=TA_RIGHT, fontSize=10,
-                    textColor=colors.HexColor("#be185d"), leading=18,
+                    textColor=colors.black, leading=18,
                     backColor=GRAY_100, borderPadding=4)
     footer_style = ps("footer", alignment=TA_CENTER, fontSize=9,
-                      textColor=colors.HexColor("#9ca3af"), leading=16)
+                      textColor=colors.black, leading=16)
     return {
         "title": title_style, "subtitle": subtitle_style,
         "h2": h2_style, "h3": h3_style, "body": body_style,
@@ -197,7 +197,7 @@ def build_pdf():
             ("RIGHTPADDING",  (0, 0), (-1, -1), 0),
         ]))
         title_p = Paragraph(fa(title), ParagraphStyle(
-            "steptitle", fontName="Ravi", fontSize=11, textColor=GRAY_900,
+            "steptitle", fontName="Ravi", fontSize=11, textColor=colors.black,
             alignment=TA_RIGHT, leading=20,
         ))
         desc_p = Paragraph(fa(desc), s["body"])
@@ -452,11 +452,11 @@ def build_pdf():
     story.append(Spacer(1, 3 * mm))
 
     header_style = ParagraphStyle(
-        "th", fontName="Ravi", fontSize=10, textColor=GRAY_900,
+        "th", fontName="Ravi", fontSize=10, textColor=colors.black,
         alignment=TA_RIGHT, leading=18,
     )
     cell_style = ParagraphStyle(
-        "td", fontName="Ravi", fontSize=10, textColor=GRAY_700,
+        "td", fontName="Ravi", fontSize=10, textColor=colors.black,
         alignment=TA_RIGHT, leading=18,
     )
     table_data = [
