@@ -6,3 +6,4 @@ dist
 *.local
 .env*
 tsconfig.tsbuildinfo
+website/*.zip

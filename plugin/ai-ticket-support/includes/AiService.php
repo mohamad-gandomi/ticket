@@ -19,7 +19,7 @@ final class AiService {
 
     private const DEFAULT_MODEL  = 'gapgpt-qwen-3.5';
     private const TOP_K          = 4;   // fallback when setting is missing
-    private const MAX_BODY_CHARS = 400; // fallback when setting is missing
+    private const MAX_BODY_CHARS = 1200; // fallback when setting is missing
 
     private const SYSTEM_PROMPT_KB_ONLY = <<<'SYS'
 تو یک دستیار پشتیبانی فنی هستی. وظیفه‌ات نوشتن یک پاسخ دقیق برای سوال کاربر است.

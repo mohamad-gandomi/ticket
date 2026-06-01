@@ -9,13 +9,13 @@ defined('ABSPATH') || exit;
 
 $manifest_path = ATS_DIR . 'assets/dist/.vite/manifest.json';
 if (! file_exists($manifest_path)) {
-    wp_die('AI Ticket Support: asset manifest not found. Run <code>npm run build</code> first.', 500);
+    wp_die('WP AI Support: asset manifest not found. Run <code>npm run build</code> first.', 500);
 }
 
 $manifest = json_decode((string) file_get_contents($manifest_path), true);
 $entry    = $manifest['src/main.tsx'] ?? null;
 if ($entry === null) {
-    wp_die('AI Ticket Support: entry point missing from manifest.', 500);
+    wp_die('WP AI Support: entry point missing from manifest.', 500);
 }
 
 $dist_url  = ATS_URL . 'assets/dist/';

@@ -20,7 +20,7 @@ final class SettingsController extends AbstractController {
         'brandColor'     => '#0068ff',
         'providers'      => [],
         'aiTopK'         => 4,
-        'aiMaxBodyChars' => 400,
+        'aiMaxBodyChars' => 1200,
     ];
 
     public function register_routes(): void {
@@ -70,7 +70,7 @@ final class SettingsController extends AbstractController {
             'brandColor'     => sanitize_hex_color($req->get_param('brandColor')) ?: '#0068ff',
             'providers'      => $this->sanitize_providers($providers),
             'aiTopK'         => max(1, min(10,   (int) ($json['aiTopK']         ?? 4))),
-            'aiMaxBodyChars' => max(100, min(2000, (int) ($json['aiMaxBodyChars'] ?? 400))),
+            'aiMaxBodyChars' => max(100, min(2000, (int) ($json['aiMaxBodyChars'] ?? 1200))),
         ];
 
         update_option(self::OPTION_KEY, $settings);

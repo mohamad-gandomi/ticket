@@ -51,43 +51,48 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   const nav       = mode === 'admin' ? ADMIN_NAV : USER_NAV;
   const homeRoute = '/tickets';
 
+  const brand = (
+    <Link to={homeRoute} onClick={onClose} className="flex items-center gap-2 pb-5 mb-1 border-b border-line shrink-0">
+      <span className="text-brand"><TicketStar size={32} /></span>
+      <div>
+        <div className="text-[14px] font-bold leading-tight">WP AI Support</div>
+        <div className="text-[11px] text-ink-500">{mode === 'admin' ? 'پنل مدیریت' : 'پنل کاربر'}</div>
+      </div>
+    </Link>
+  );
+
   return (
     <>
+      {/* Mobile overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-40 bg-ink-900/40 lg:hidden" onClick={onClose} />
       )}
 
+      {/* Desktop: stretching white column so background fills full page height */}
+      <div className="hidden lg:flex flex-col w-60 shrink-0 bg-white border-l border-line">
+        <div className="sticky top-0 h-screen overflow-y-auto p-5 flex flex-col gap-1">
+          {brand}
+          <NavItems items={nav} />
+        </div>
+      </div>
+
+      {/* Mobile: fixed slide-in overlay */}
       <aside
         className={`
           fixed top-0 right-0 z-50 h-screen w-60 shrink-0 border-l border-line bg-white p-5
-          flex flex-col gap-1 overflow-auto transition-transform duration-300
-          lg:sticky lg:top-0 lg:z-auto lg:translate-x-0 lg:self-start
+          flex flex-col gap-1 overflow-y-auto transition-transform duration-300 lg:hidden
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
       >
-        <div className="flex items-center justify-between pb-5 mb-1 border-b border-line lg:hidden">
-          <button
-            onClick={onClose}
-            className="size-9 grid place-items-center rounded-lg text-ink-500 hover:bg-surface-50"
-          >
+        <div className="flex items-center justify-between pb-5 mb-1 border-b border-line shrink-0">
+          <button onClick={onClose} className="size-9 grid place-items-center rounded-lg text-ink-500 hover:bg-surface-50">
             <Close size={18} />
           </button>
           <Link to={homeRoute} onClick={onClose} className="flex items-center gap-2">
-            <span className="text-brand"><TicketStar size={28} /></span>
-            <span className="text-[14px] font-bold">AI Ticket</span>
+            <span className="text-brand"><TicketStar size={26} /></span>
+            <span className="text-[13px] font-bold">WP AI Support</span>
           </Link>
         </div>
-
-        <Link to={homeRoute} onClick={onClose} className="hidden lg:flex items-center gap-2 pb-5 mb-1 border-b border-line">
-          <span className="text-brand"><TicketStar size={36} /></span>
-          <div>
-            <div className="text-[15px] font-bold leading-tight">AI Ticket</div>
-            <div className="text-[11px] text-ink-500">
-              {mode === 'admin' ? 'پنل مدیریت' : 'پنل کاربر'}
-            </div>
-          </div>
-        </Link>
-
         <NavItems items={nav} onClose={onClose} />
       </aside>
     </>
@@ -100,7 +105,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const homeRoute = '/tickets';
 
   return (
-    <div className="min-h-screen flex bg-surface-50 text-ink-900" dir="rtl">
+    <div className="min-h-screen flex bg-surface-50 text-ink-900 overflow-x-hidden" dir="rtl">
       <div className="lg:hidden fixed top-0 right-0 left-0 z-30 h-14 bg-white border-b border-line flex items-center justify-between px-4 shrink-0">
         <button
           onClick={() => setSidebarOpen(true)}
@@ -110,7 +115,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </button>
         <Link to={homeRoute} className="flex items-center gap-2">
           <span className="text-brand"><TicketStar size={28} /></span>
-          <span className="text-[14px] font-bold">{mode === 'admin' ? 'AI Ticket Admin' : 'AI Ticket'}</span>
+          <span className="text-[14px] font-bold">WP AI Support</span>
         </Link>
       </div>
 

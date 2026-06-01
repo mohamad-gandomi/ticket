@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WP AI Support — پشتیبانی هوشمند برای وردپرس</title>
+  <meta name="description" content="پلاگین وردپرس برای مدیریت تیکت‌های پشتیبانی با کمک هوش مصنوعی و پایگاه دانش.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="assets/tailwind.css">
+  <style>
+    @font-face {
+      font-family: 'Ravi';
+      src: url('fonts/Ravi-VF.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+    html { overflow-x: clip; }
+    * { font-family: 'Ravi', sans-serif; }
+    .hero-bg { background: linear-gradient(150deg, #060d1f 0%, #0b1a3d 60%, #071224 100%); }
+    .card-hover { transition: transform .2s ease, box-shadow .2s ease; }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,104,255,.08); }
+    .glow { box-shadow: 0 0 80px rgba(0,104,255,.25); }
+  </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+  <!-- ── Nav ───────────────────────────────────────────────────────────────── -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="size-8 rounded-lg bg-brand grid place-items-center">
+          <svg class="size-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+        </div>
+        <span class="font-bold text-[15px]">WP AI Support</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="docs/" class="hidden sm:block text-[13px] text-gray-500 hover:text-brand transition">مستندات</a>
+        <a href="https://www.rtl-theme.com/" target="_blank"
+          class="h-9 px-5 rounded-lg bg-brand text-white text-[13px] font-semibold hover:bg-brand-dark transition inline-flex items-center">
+          خرید پلاگین
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+  <section class="hero-bg min-h-screen flex items-center pt-16 overflow-x-hidden">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-28 flex flex-col items-center text-center">
+
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-white/70 text-[12px] mb-8">
+        <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        WP AI Support — نسخه ۱.۰
+      </div>
+
+      <h1 class="text-[42px] sm:text-[58px] lg:text-[68px] font-black text-white leading-[1.2] mb-6 tracking-tight">
+        پشتیبانی هوشمند<br>
+        <span style="color:#5ea8ff">برای وردپرس</span>
+      </h1>
+
+      <p class="text-[16px] sm:text-[18px] text-white/65 max-w-2xl leading-8 mb-10">
+        با WP AI Support، هوش مصنوعی به جای شما پاسخ می‌دهد.<br class="hidden sm:block">
+        تیکت‌های مشتریانتان را مدیریت کنید، سریع‌تر پاسخ دهید، هزینه پشتیبانی را کاهش دهید.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        <a href="https://www.rtl-theme.com/" target="_blank"
+          class="w-full sm:w-auto h-13 px-8 py-3.5 rounded-xl bg-brand text-white font-bold text-[15px] hover:bg-blue-500 transition inline-flex items-center justify-center gap-2">
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          خرید پلاگین
+        </a>
+        <a href="docs/"
+          class="w-full sm:w-auto h-13 px-8 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white font-medium text-[15px] hover:bg-white/18 transition inline-flex items-center justify-center gap-2">
+          <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          مشاهده مستندات
+        </a>
+      </div>
+
+      <!-- Mockup -->
+      <div class="mt-20 w-full max-w-4xl relative">
+        <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#060d1f] to-transparent z-10 rounded-b-2xl"></div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-2 glow">
+          <div class="rounded-xl bg-[#0c1830] border border-white/8 overflow-hidden">
+            <!-- Fake browser bar -->
+            <div class="flex items-center gap-1.5 px-4 py-3 border-b border-white/8">
+              <span class="size-2.5 rounded-full bg-red-500/60"></span>
+              <span class="size-2.5 rounded-full bg-yellow-500/60"></span>
+              <span class="size-2.5 rounded-full bg-green-500/60"></span>
+              <span class="mx-auto text-[11px] text-white/30">wpaisupport.ir/helpdesk-admin</span>
+            </div>
+            <!-- Fake UI -->
+            <div class="flex" style="height:320px">
+              <!-- Sidebar -->
+              <div class="w-52 border-l border-white/8 p-4 flex flex-col gap-3 shrink-0">
+                <div class="h-8 rounded-lg bg-brand/30 w-full"></div>
+                <div class="h-8 rounded-lg bg-white/5 w-full"></div>
+                <div class="h-8 rounded-lg bg-white/5 w-full"></div>
+                <div class="mt-auto h-8 rounded-lg bg-white/5 w-3/4"></div>
+              </div>
+              <!-- Content -->
+              <div class="flex-1 p-5 flex flex-col gap-3">
+                <div class="flex gap-2">
+                  <div class="h-8 rounded-lg bg-white/8 flex-1"></div>
+                  <div class="h-8 w-24 rounded-lg bg-brand/40"></div>
+                </div>
+                <div class="flex gap-3 flex-1">
+                  <div class="flex-1 rounded-xl bg-white/5 border border-white/8 p-3 flex flex-col gap-2">
+                    <div class="h-3 rounded bg-white/15 w-3/4"></div>
+                    <div class="h-3 rounded bg-white/8 w-full"></div>
+                    <div class="h-3 rounded bg-white/8 w-2/3"></div>
+                    <div class="mt-auto h-6 rounded-lg bg-brand/25 w-1/3"></div>
+                  </div>
+                  <div class="flex-1 rounded-xl bg-white/5 border border-white/8 p-3 flex flex-col gap-2">
+                    <div class="h-3 rounded bg-white/15 w-1/2"></div>
+                    <div class="h-3 rounded bg-white/8 w-full"></div>
+                    <div class="h-3 rounded bg-white/8 w-3/4"></div>
+                    <div class="mt-auto h-6 rounded-lg bg-emerald-500/25 w-1/3"></div>
+                  </div>
+                  <div class="flex-1 rounded-xl bg-white/5 border border-white/8 p-3 flex flex-col gap-2 hidden lg:flex">
+                    <div class="h-3 rounded bg-white/15 w-2/3"></div>
+                    <div class="h-3 rounded bg-white/8 w-full"></div>
+                    <div class="h-3 rounded bg-white/8 w-1/2"></div>
+                    <div class="mt-auto h-6 rounded-lg bg-orange-500/25 w-1/3"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ──────────────────────────────────────────────────────────── -->
+  <section class="py-28 bg-gray-50" id="features">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-[32px] sm:text-[42px] font-black text-gray-900 mb-4">همه چیزی که نیاز دارید</h2>
+        <p class="text-[15px] text-gray-500 max-w-xl mx-auto leading-7">
+          یک پلاگین کامل برای پشتیبانی حرفه‌ای از مشتریان — با کمک هوش مصنوعی
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-blue-50 grid place-items-center">
+            <svg class="size-6 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">پاسخ هوشمند با هوش مصنوعی</h3>
+            <p class="text-[13px] text-gray-500 leading-7">هوش مصنوعی بر اساس پایگاه دانش شما پاسخ می‌دهد. مشتری فوری جواب می‌گیرد، شما وقت آزاد دارید.</p>
+          </div>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-purple-50 grid place-items-center">
+            <svg class="size-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">پایگاه دانش ساختارمند</h3>
+            <p class="text-[13px] text-gray-500 leading-7">پاسخ‌های آماده دسته‌بندی‌شده برای سوالات رایج. هوش مصنوعی بهترین پاسخ را پیدا و ارائه می‌دهد.</p>
+          </div>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-green-50 grid place-items-center">
+            <svg class="size-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">مدیریت تیکت حرفه‌ای</h3>
+            <p class="text-[13px] text-gray-500 leading-7">صف تیکت‌ها با وضعیت‌بندی، اولویت، فیلتر و جستجو. همه چیز در یک پنل ساده و سریع.</p>
+          </div>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-orange-50 grid place-items-center">
+            <svg class="size-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">شخصی‌سازی رنگ برند</h3>
+            <p class="text-[13px] text-gray-500 leading-7">رنگ برند خود را تنظیم کنید. پلاگین کاملاً با هویت بصری سایت شما هماهنگ می‌شود.</p>
+          </div>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-red-50 grid place-items-center">
+            <svg class="size-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">پیوست فایل و تصویر</h3>
+            <p class="text-[13px] text-gray-500 leading-7">مشتریان می‌توانند فایل و اسکرین‌شات پیوست کنند. بررسی مشکلات پیچیده دیگر آسان است.</p>
+          </div>
+        </div>
+
+        <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4">
+          <div class="size-12 rounded-xl bg-teal-50 grid place-items-center">
+            <svg class="size-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-[15px] font-bold text-gray-900 mb-2">نصب آسان روی وردپرس</h3>
+            <p class="text-[13px] text-gray-500 leading-7">مثل هر پلاگین وردپرس — آپلود کنید و فعال کنید. بدون سرور جداگانه یا تنظیمات پیچیده.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Screenshots carousel ─────────────────────────────────────────────── -->
+  <section class="py-28 bg-white overflow-hidden" id="screenshots">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-[32px] sm:text-[42px] font-black text-gray-900 mb-4">نگاهی به پلاگین</h2>
+        <p class="text-[15px] text-gray-500">رابط کاربری ساده، سریع و حرفه‌ای — برای مدیر و کاربر</p>
+      </div>
+    </div>
+
+    <!-- Carousel track (full-width, not constrained) -->
+    <div class="relative max-w-5xl mx-auto px-5 sm:px-8">
+
+      <!-- Slides -->
+      <div id="car-track" class="relative overflow-hidden rounded-2xl border border-gray-100 shadow-md bg-gray-50 cursor-pointer select-none"
+           style="aspect-ratio:16/9">
+        <!-- slides injected by JS -->
+      </div>
+
+      <!-- Prev / Next -->
+      <button id="car-prev" aria-label="قبلی"
+        class="hidden sm:grid absolute top-1/2 -translate-y-1/2 right-0 -mr-6 size-11 rounded-full bg-white border border-gray-200 shadow-md place-items-center text-gray-600 hover:text-brand hover:border-brand transition z-10">
+        <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+      <button id="car-next" aria-label="بعدی"
+        class="hidden sm:grid absolute top-1/2 -translate-y-1/2 left-0 -ml-6 size-11 rounded-full bg-white border border-gray-200 shadow-md place-items-center text-gray-600 hover:text-brand hover:border-brand transition z-10">
+        <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <!-- Dots -->
+      <div id="car-dots" class="flex items-center justify-center gap-1.5 mt-5"></div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lb" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <button id="lb-close" aria-label="بستن"
+      class="absolute top-4 left-4 size-10 rounded-full bg-white/10 hover:bg-white/20 grid place-items-center text-white transition">
+      <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <button id="lb-prev" aria-label="قبلی"
+      class="hidden sm:grid absolute right-4 top-1/2 -translate-y-1/2 size-11 rounded-full bg-white/10 hover:bg-white/20 place-items-center text-white transition">
+      <svg class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+    <button id="lb-next" aria-label="بعدی"
+      class="hidden sm:grid absolute left-4 top-1/2 -translate-y-1/2 size-11 rounded-full bg-white/10 hover:bg-white/20 place-items-center text-white transition">
+      <svg class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <img id="lb-img" src="" alt="" class="max-h-[90vh] max-w-full rounded-xl shadow-2xl object-contain transition-opacity duration-200">
+    <div id="lb-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-[12px]"></div>
+  </div>
+
+  <script>
+    (function () {
+      const SLIDES = [
+        { src: 'assets/images/admin-list.png',          alt: 'لیست تیکت‌های مدیر' },
+        { src: 'assets/images/admin-knowledge-1.png',   alt: 'پایگاه دانش — دسته‌بندی‌ها' },
+        { src: 'assets/images/admin-knowledge-2.png',   alt: 'پایگاه دانش — پاسخ‌ها' },
+        { src: 'assets/images/admin-add-knowledge.png', alt: 'افزودن پاسخ آماده' },
+        { src: 'assets/images/admin-settings.png',      alt: 'تنظیمات پلاگین' },
+        { src: 'assets/images/user-new-ticket.png',     alt: 'ارسال تیکت جدید' },
+        { src: 'assets/images/ai-loading.png',          alt: 'هوش مصنوعی در حال پاسخ‌دهی' },
+        { src: 'assets/images/user-ai-answer.png',      alt: 'پاسخ هوشمند هوش مصنوعی' },
+        { src: 'assets/images/user-list-ticket.png',    alt: 'لیست تیکت‌های کاربر' },
+        { src: 'assets/images/usersite-chat.png',       alt: 'گفتگو در پنل کاربر' },
+      ];
+
+      const track   = document.getElementById('car-track');
+      const dotsEl  = document.getElementById('car-dots');
+      const lb      = document.getElementById('lb');
+      const lbImg   = document.getElementById('lb-img');
+      const lbCtr   = document.getElementById('lb-counter');
+      let current   = 0;
+      let lbIndex   = 0;
+
+      /* ── Build carousel slides ── */
+      SLIDES.forEach((s, i) => {
+        const div = document.createElement('div');
+        div.className = 'absolute inset-0 transition-opacity duration-500 ' + (i === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none');
+        div.dataset.index = i;
+
+        const img = document.createElement('img');
+        img.alt = s.alt;
+        img.className = 'w-full h-full object-contain';
+        if (i === 0) {
+          img.src = s.src;
+        } else {
+          img.dataset.src = s.src;
+          img.loading = 'lazy';
+        }
+        img.addEventListener('click', () => openLb(i));
+
+        div.appendChild(img);
+        track.appendChild(div);
+      });
+
+      /* ── Dots ── */
+      SLIDES.forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'size-2 rounded-full transition-all duration-300 ' + (i === 0 ? 'bg-brand w-5' : 'bg-gray-300');
+        d.addEventListener('click', () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      function slides()  { return track.querySelectorAll('[data-index]'); }
+      function dots()    { return dotsEl.querySelectorAll('button'); }
+
+      function lazyLoad(i) {
+        const img = slides()[i].querySelector('img');
+        if (img.dataset.src) { img.src = img.dataset.src; delete img.dataset.src; }
+      }
+
+      function goTo(n) {
+        slides()[current].classList.replace('opacity-100', 'opacity-0');
+        slides()[current].classList.add('pointer-events-none');
+        dots()[current].className = 'size-2 rounded-full transition-all duration-300 bg-gray-300';
+
+        current = (n + SLIDES.length) % SLIDES.length;
+        lazyLoad(current);
+        lazyLoad((current + 1) % SLIDES.length); // preload next
+
+        slides()[current].classList.replace('opacity-0', 'opacity-100');
+        slides()[current].classList.remove('pointer-events-none');
+        dots()[current].className = 'size-2 rounded-full transition-all duration-300 bg-brand w-5';
+      }
+
+      document.getElementById('car-prev').addEventListener('click', () => goTo(current - 1));
+      document.getElementById('car-next').addEventListener('click', () => goTo(current + 1));
+
+      /* ── Touch / swipe ── */
+      let tx = 0;
+      track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      track.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx;
+        if (Math.abs(dx) > 40) goTo(dx > 0 ? current - 1 : current + 1);
+      }, { passive: true });
+
+      /* ── Lightbox ── */
+      function openLb(i) {
+        lbIndex = i;
+        lbImg.style.opacity = '0';
+        lb.classList.remove('opacity-0', 'pointer-events-none');
+        document.body.style.overflow = 'hidden';
+        showLbSlide();
+      }
+
+      function showLbSlide() {
+        lbImg.style.opacity = '0';
+        setTimeout(() => {
+          lbImg.src = SLIDES[lbIndex].src;
+          lbImg.alt = SLIDES[lbIndex].alt;
+          lbImg.onload = () => { lbImg.style.opacity = '1'; };
+          lbCtr.textContent = (lbIndex + 1) + ' / ' + SLIDES.length;
+        }, 150);
+      }
+
+      function closeLb() {
+        lb.classList.add('opacity-0', 'pointer-events-none');
+        document.body.style.overflow = '';
+      }
+
+      document.getElementById('lb-close').addEventListener('click', closeLb);
+      lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+      document.getElementById('lb-prev').addEventListener('click', () => { lbIndex = (lbIndex - 1 + SLIDES.length) % SLIDES.length; showLbSlide(); });
+      document.getElementById('lb-next').addEventListener('click', () => { lbIndex = (lbIndex + 1) % SLIDES.length; showLbSlide(); });
+
+      /* ── Lightbox touch swipe (whole overlay, not just image) ── */
+      let lbTx = 0, lbTy = 0;
+      lb.addEventListener('touchstart', e => {
+        lbTx = e.touches[0].clientX;
+        lbTy = e.touches[0].clientY;
+      }, { passive: true });
+      lb.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - lbTx;
+        const dy = e.changedTouches[0].clientY - lbTy;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          lbIndex = (lbIndex + (dx > 0 ? -1 : 1) + SLIDES.length) % SLIDES.length;
+          showLbSlide();
+        }
+      }, { passive: true });
+
+      document.addEventListener('keydown', e => {
+        if (lb.classList.contains('opacity-0')) return;
+        if (e.key === 'Escape')      closeLb();
+        if (e.key === 'ArrowRight')  { lbIndex = (lbIndex - 1 + SLIDES.length) % SLIDES.length; showLbSlide(); }
+        if (e.key === 'ArrowLeft')   { lbIndex = (lbIndex + 1) % SLIDES.length; showLbSlide(); }
+      });
+
+      /* ── Auto-advance ── */
+      let timer = setInterval(() => goTo(current + 1), 4000);
+      track.addEventListener('mouseenter', () => clearInterval(timer));
+      track.addEventListener('mouseleave', () => { timer = setInterval(() => goTo(current + 1), 4000); });
+    })();
+  </script>
+
+  <!-- ── Video ──────────────────────────────────────────────────────────────── -->
+  <section class="py-28 bg-gray-50" id="demo">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+      <div class="text-center mb-14">
+        <h2 class="text-[32px] sm:text-[42px] font-black text-gray-900 mb-4">ببینید چگونه کار می‌کند</h2>
+        <p class="text-[15px] text-gray-500">در کمتر از پنج دقیقه پلاگین را راه‌اندازی کنید</p>
+      </div>
+
+      <div class="relative rounded-3xl overflow-hidden bg-gray-900 max-w-4xl mx-auto cursor-pointer group"
+           style="aspect-ratio:16/9">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/60 to-gray-900/90"></div>
+        <!-- Grid pattern -->
+        <div class="absolute inset-0 opacity-10"
+          style="background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:40px 40px"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="flex flex-col items-center gap-5">
+            <div class="size-20 rounded-full bg-white/15 backdrop-blur border border-white/25 grid place-items-center group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+              <svg class="size-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <span class="text-white/60 text-[13px]">ویدیو معرفی WP AI Support</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it works ───────────────────────────────────────────────────────── -->
+  <section class="py-28 bg-gray-50" id="how">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-[32px] sm:text-[42px] font-black text-gray-900 mb-4">در سه قدم شروع کنید</h2>
+        <p class="text-[15px] text-gray-500">راه‌اندازی سریع، بدون نیاز به تخصص فنی</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
+        <div class="hidden md:block absolute top-10 right-[calc(33.33%+20px)] left-[calc(33.33%+20px)] h-px"
+          style="background:linear-gradient(90deg,#0068ff40,#0068ff20)"></div>
+
+        <div class="flex flex-col items-center text-center gap-5">
+          <div class="size-20 rounded-2xl bg-brand text-white text-[28px] font-black grid place-items-center relative z-10 shadow-lg shadow-blue-500/30">۱</div>
+          <div>
+            <h3 class="text-[16px] font-bold text-gray-900 mb-2">پلاگین را نصب کنید</h3>
+            <p class="text-[13px] text-gray-500 leading-7">فایل پلاگین را از راستچین دریافت کنید، از پنل وردپرس آپلود و فعال کنید.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center text-center gap-5">
+          <div class="size-20 rounded-2xl bg-brand text-white text-[28px] font-black grid place-items-center relative z-10 shadow-lg shadow-blue-500/30">۲</div>
+          <div>
+            <h3 class="text-[16px] font-bold text-gray-900 mb-2">پایگاه دانش بسازید</h3>
+            <p class="text-[13px] text-gray-500 leading-7">پاسخ‌های آماده برای سوالات رایج مشتریانتان را وارد و دسته‌بندی کنید.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center text-center gap-5">
+          <div class="size-20 rounded-2xl bg-brand text-white text-[28px] font-black grid place-items-center relative z-10 shadow-lg shadow-blue-500/30">۳</div>
+          <div>
+            <h3 class="text-[16px] font-bold text-gray-900 mb-2">هوش مصنوعی را فعال کنید</h3>
+            <p class="text-[13px] text-gray-500 leading-7">کلید API را وارد کنید و پاسخ هوشمند را روشن کنید. از این لحظه هوش مصنوعی کار می‌کند.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────────────────────── -->
+  <section class="py-28 bg-brand relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10"
+      style="background-image:radial-gradient(circle at 20% 50%, white 1px, transparent 1px),radial-gradient(circle at 80% 50%, white 1px, transparent 1px);background-size:60px 60px"></div>
+    <div class="relative max-w-6xl mx-auto px-5 sm:px-8 text-center">
+      <h2 class="text-[32px] sm:text-[42px] font-black text-white mb-4">آماده‌اید شروع کنید؟</h2>
+      <p class="text-[15px] text-white/75 mb-10 max-w-lg mx-auto leading-7">
+        همین حالا پلاگین را از راستچین تهیه کنید و پشتیبانی سایت خود را هوشمند کنید.
+      </p>
+      <a href="https://www.rtl-theme.com/" target="_blank"
+        class="inline-flex items-center gap-2.5 h-14 px-10 rounded-xl bg-white text-brand font-bold text-[16px] hover:bg-blue-50 transition shadow-2xl shadow-blue-900/40">
+        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        خرید از راستچین
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <footer class="py-8 bg-gray-950">
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="size-6 rounded-md bg-brand grid place-items-center">
+          <svg class="size-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+        </div>
+        <span class="text-white font-bold text-[13px]">WP AI Support</span>
+      </div>
+      <div class="flex items-center gap-5 text-[12px] text-gray-500">
+        <a href="docs/" class="hover:text-gray-300 transition">مستندات</a>
+        <span class="w-px h-3 bg-gray-800"></span>
+        <a href="https://www.rtl-theme.com/" target="_blank" class="hover:text-gray-300 transition">خرید</a>
+        <span class="w-px h-3 bg-gray-800"></span>
+        <span class="text-gray-600">wpaisupport.ir</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: AI Ticket Support
- * Plugin URI:  https://github.com/mehmet-gandomi/ticket
- * Description: AI-powered customer support ticket system with a full React interface.
+ * Plugin Name: WP AI Support
+ * Plugin URI:  http://wpaisupport.ir/
+ * Description: پشتیبانی هوشمند برای وردپرس — مدیریت تیکت با هوش مصنوعی و پایگاه دانش
  * Version:     1.0.0
- * Author:      Mehmet Gandomi
- * Text Domain: ai-ticket-support
+ * Author:      Mohamad Gandomi
+ * Text Domain: wp-ai-support
  * Domain Path: /languages
  * Requires at least: 6.0
  * Requires PHP:      8.1
