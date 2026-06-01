@@ -41,6 +41,7 @@ def fa(text):
 def make_styles():
     def ps(name, **kwargs):
         kwargs.setdefault("fontName", "Ravi")
+        kwargs.setdefault("textColor", colors.black)
         return ParagraphStyle(name, **kwargs)
 
     title_style = ps("title", alignment=TA_CENTER, fontSize=26, textColor=GRAY_900,
@@ -188,7 +189,7 @@ def build_pdf():
     for num, title, desc in steps:
         badge_style = ParagraphStyle(
             "badge", alignment=TA_CENTER, fontSize=12, textColor=colors.white,
-            fontName="Ravi", leading=18,
+            fontName="Ravi", leading=18, parent=None,
         )
         badge_cell = Paragraph(fa(num), badge_style)
         badge_table = Table([[badge_cell]], colWidths=[8 * mm], rowHeights=[8 * mm])
@@ -201,7 +202,7 @@ def build_pdf():
         ]))
         title_p = Paragraph(fa(title), ParagraphStyle(
             "steptitle", fontName="Ravi", fontSize=11, textColor=colors.black,
-            alignment=TA_RIGHT, leading=20,
+            alignment=TA_RIGHT, leading=20, parent=None,
         ))
         desc_p = Paragraph(fa(desc), s["body"])
         inner_w = W - 15 * mm
@@ -457,11 +458,11 @@ def build_pdf():
 
     header_style = ParagraphStyle(
         "th", fontName="Ravi", fontSize=10, textColor=colors.black,
-        alignment=TA_RIGHT, leading=18,
+        alignment=TA_RIGHT, leading=18, parent=None,
     )
     cell_style = ParagraphStyle(
         "td", fontName="Ravi", fontSize=10, textColor=colors.black,
-        alignment=TA_RIGHT, leading=18,
+        alignment=TA_RIGHT, leading=18, parent=None,
     )
     table_data = [
         [Paragraph(fa("وضعیت"), header_style),
