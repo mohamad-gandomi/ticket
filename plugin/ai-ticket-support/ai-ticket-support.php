@@ -36,23 +36,6 @@ spl_autoload_register(static function (string $class): void {
 register_activation_hook(__FILE__,   [ATS\Plugin::class, 'activate']);
 register_deactivation_hook(__FILE__, [ATS\Plugin::class, 'deactivate']);
 
-// --------------------------------------------------------------------------------------------------- Start RTL License
-$rtlLicenseClassName  = 'RTL_License_94bdc51e29c098e1';
-$rtlLicenseFilePath   = __DIR__ . DIRECTORY_SEPARATOR . $rtlLicenseClassName . '.php';
-$rtlLicenseFileHash   = @sha1_file($rtlLicenseFilePath);
-
-if ( $rtlLicenseFileHash === 'c5dafeb01a140ca6468f8d9b34cb2caa953013d4' && file_exists($rtlLicenseFilePath) ) {
-	require_once $rtlLicenseFilePath;
-
-	if ( class_exists($rtlLicenseClassName) && method_exists($rtlLicenseClassName, 'isActive') ) {
-		$rtlLicenseClass = new $rtlLicenseClassName();
-
-		if ( $rtlLicenseClass->{'isActive'}() === true ) {
-			// Product is Active Now, Enable Pro Features
-			add_action('ats_admin_active', '__return_true');
-		}
-	}
-}
-// ----------------------------------------------------------------------------------------------------- End RTL License
+require_once ATS_DIR . 'rtl-license.php';
 
 ATS\Plugin::instance()->boot();
