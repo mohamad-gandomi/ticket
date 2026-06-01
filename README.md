@@ -1,55 +1,81 @@
-# AI Ticket — React + Vite + Tailwind
+# WP AI Support
 
-A faithful reimplementation of the **Plugin – Ticket AI** Figma in modern
-React. RTL Persian UI, Tailwind‑styled, fully typed.
+A WordPress plugin for professional customer support with AI-powered ticket management.
 
-## Stack
+When a customer submits a ticket, the AI reads your knowledge base and replies instantly. If it can't find a good answer, the ticket goes to a human agent. Customers can also choose to skip the AI and talk to support directly.
 
-- React 18 + TypeScript
-- Vite 5
-- Tailwind CSS 3 (custom palette mirroring the Figma tokens)
-- React Router 6
+**Sell on:** [rtl-theme.com](https://www.rtl-theme.com/) &nbsp;|&nbsp; **Docs:** [wpaisupport.ir](http://wpaisupport.ir/)
 
-## Getting started
+---
+
+## What's in this repo
+
+```
+plugin/      WordPress plugin (PHP)
+src/         React frontend (TypeScript + Tailwind)
+website/     Landing page + documentation site (plain HTML)
+```
+
+---
+
+## 1. Plugin
+
+The WordPress plugin lives in `plugin/ai-ticket-support/`. Install it like any other plugin — upload the folder to `wp-content/plugins/` and activate.
+
+Two URLs are registered after activation:
+
+| URL | Who sees it |
+|-----|-------------|
+| `yoursite.com/helpdesk` | Customers (logged-in WordPress users) |
+| `yoursite.com/helpdesk-admin` | Admins (`manage_options` capability) |
+
+**License:** The admin panel requires an active RTL license. `rtl-license.php` contains the license check — upload this file to the RTL encoder before shipping.
+
+---
+
+## 2. Frontend (React app)
+
+The React app is embedded inside the plugin. It serves both the user panel and the admin panel depending on the `mode` passed from PHP.
+
+**Dev setup:**
 
 ```bash
 npm install
-npm run dev
+npm run dev       # starts Vite dev server
+npm run build     # outputs to plugin/ai-ticket-support/assets/dist/
 ```
 
-Open the URL Vite prints (usually `http://localhost:5173`).
+**Routes:**
 
-## Project structure
+| Path | Description |
+|------|-------------|
+| `/tickets` | Ticket list |
+| `/tickets/new` | Submit a new ticket |
+| `/tickets/:id` | Chat view |
+| `/tickets/:id/ai-show` | AI answer + accept/escalate |
+| `/knowledge` | Admin knowledge base |
+| `/settings` | Admin settings |
 
+---
+
+## 3. Website
+
+Static landing page and documentation at `website/`. No build tool needed for HTML — just edit and open in a browser. Tailwind CSS is pre-generated.
+
+**Rebuild Tailwind** (only needed after adding new utility classes to the HTML):
+
+```bash
+cd website
+npx tailwindcss -c tailwind.config.js -i assets/input.css -o assets/tailwind.css
 ```
-src/
-  components/     # Button, Label, FormControls, PageHeader, TicketCard, ChatBubble, …
-  pages/          # one file per top-level user screen
-  icons/          # vuesax-style icon set (currentColor, sized via props)
-  data/mock.ts    # mock tickets + sample chat + AI answer
-  App.tsx         # routes
-  main.tsx        # entry point
-  index.css       # Tailwind + Ravi @font-face declaration
-```
 
-## Pages
+**Deploy:** copy the contents of `website/dist/` to your host root.
 
-| Route                  | Description                                     |
-| ---------------------- | ----------------------------------------------- |
-| `/tickets`             | Ticket list with status tabs & pagination       |
-| `/tickets/new`         | New ticket composer                             |
-| `/tickets/:id`         | Threaded chat with the support team             |
-| `/tickets/loading`     | AI-answer loading skeleton                      |
-| `/tickets/ai-show`     | AI suggested answers + feedback                 |
-| `/tickets/not-found`   | Empty-state when AI couldn't help               |
+---
 
-## Notes
+## Stack
 
-- The Figma uses a custom **Ravi** Persian face that isn't published on
-  Google Fonts. `index.css` declares it with a local() fallback to Tahoma
-  / system-ui. Drop a `Ravi.woff2` into `public/fonts/` and extend the
-  `@font-face` rule with a `url()` source when you have the licence.
-- Colors and spacing values come directly from the Figma — see
-  `tailwind.config.js`.
-- Icons are inline SVG (vuesax outline style) and inherit `currentColor`,
-  so you can recolor them with Tailwind text utilities.
+- **Plugin:** PHP 8.1+, WordPress 6.0+, REST API
+- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS 3, React Router 6
+- **Font:** Ravi (variable, Persian)
+- **AI provider:** GapGPT (Iranian AI service with Farsi support)
