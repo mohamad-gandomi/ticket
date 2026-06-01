@@ -74,10 +74,13 @@ def make_styles():
     }
 
 
+W = 170 * mm  # usable page width (A4 210mm - 20mm margins x2)
+
+
 def note_box(text, style_name, bg, border_color, s):
     icon = {"note": "ℹ", "warn": "⚠", "tip": "✓"}[style_name]
     p = Paragraph(fa(f"{icon}  {text}"), s[style_name])
-    t = Table([[p]], colWidths=[155 * mm])
+    t = Table([[p]], colWidths=[W])
     t.setStyle(TableStyle([
         ("BACKGROUND",    (0, 0), (-1, -1), bg),
         ("LINEAFTER",     (0, 0), (0, -1),  3, border_color),
@@ -112,14 +115,14 @@ def build_pdf():
 
     # ── Cover ────────────────────────────────────────────────────────────────────
     story.append(Spacer(1, 30 * mm))
-    story.append(Paragraph(fa("WP AI Support"), s["title"]))
+    story.append(Paragraph("WP AI Support", s["title"]))
     story.append(Spacer(1, 4 * mm))
     story.append(Paragraph(fa("راهنمای کامل افزونه"), s["subtitle"]))
     story.append(Spacer(1, 2 * mm))
     story.append(Paragraph(fa("پشتیبانی هوشمند برای وردپرس — مدیریت تیکت با هوش مصنوعی"), s["subtitle"]))
     story.append(Spacer(1, 8 * mm))
 
-    cover_bar = Table([[ Paragraph(fa("wpaisupport.ir"), s["subtitle"]) ]], colWidths=[155 * mm])
+    cover_bar = Table([[ Paragraph(fa("wpaisupport.ir"), s["subtitle"]) ]], colWidths=[W])
     cover_bar.setStyle(TableStyle([
         ("BACKGROUND",    (0, 0), (-1, -1), BRAND),
         ("TOPPADDING",    (0, 0), (-1, -1), 10),
@@ -201,10 +204,11 @@ def build_pdf():
             alignment=TA_RIGHT, leading=20,
         ))
         desc_p = Paragraph(fa(desc), s["body"])
-        content = Table([[desc_p]], colWidths=[140 * mm])
+        inner_w = W - 15 * mm
+        content = Table([[desc_p]], colWidths=[inner_w])
         row_table = Table(
-            [[badge_table, Table([[title_p], [content]], colWidths=[140 * mm])]],
-            colWidths=[12 * mm, 143 * mm]
+            [[badge_table, Table([[title_p], [content]], colWidths=[inner_w])]],
+            colWidths=[15 * mm, inner_w]
         )
         row_table.setStyle(TableStyle([
             ("VALIGN",        (0, 0), (-1, -1), "TOP"),
@@ -471,7 +475,7 @@ def build_pdf():
         [Paragraph(fa("پاسخ هوشمند"), cell_style),  Paragraph(fa("با تأیید کاربر از پاسخ AI بسته شد"), cell_style), Paragraph(fa("بسته شده"), cell_style)],
         [Paragraph(fa("اسپم"), cell_style),          Paragraph(fa("تیکت اسپم"), cell_style),                Paragraph(fa("در انتظار"), cell_style)],
     ]
-    col_w = [42 * mm, 73 * mm, 40 * mm]
+    col_w = [45 * mm, 80 * mm, 45 * mm]
     status_table = Table(table_data, colWidths=col_w, repeatRows=1)
     status_table.setStyle(TableStyle([
         ("BACKGROUND",    (0, 0), (-1, 0), BRAND),
