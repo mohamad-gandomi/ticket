@@ -68,6 +68,11 @@ final class Pages {
             );
         }
 
+        if ($mode === 'admin' && ! has_action('ats_admin_active')) {
+            include ATS_DIR . 'templates/license-required.php';
+            exit;
+        }
+
         $page_title = $mode === 'admin'
             ? __('Support Admin', 'ai-ticket-support')
             : __('Helpdesk', 'ai-ticket-support');

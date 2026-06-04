@@ -36,4 +36,6 @@ spl_autoload_register(static function (string $class): void {
 register_activation_hook(__FILE__,   [ATS\Plugin::class, 'activate']);
 register_deactivation_hook(__FILE__, [ATS\Plugin::class, 'deactivate']);
 
+require_once ATS_DIR . 'rtl-license.php';
+
 ATS\Plugin::instance()->boot();
