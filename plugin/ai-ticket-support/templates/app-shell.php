@@ -72,12 +72,6 @@ $config = [
     <?php /* Brand overrides MUST come after the linked stylesheet — the compiled
              Tailwind CSS has :root defaults in it, so this inline block wins. */ ?>
     <style><?php echo $brand_css; // phpcs:ignore WordPress.Security.EscapeOutput ?></style>
-    <script>
-    (function(){
-        var s=getComputedStyle(document.documentElement);
-        console.log('[ATS brand]','--brand:',s.getPropertyValue('--brand').trim(),'config:',window.atsConfig&&window.atsConfig.brandColor);
-    })();
-    </script>
 </head>
 <body>
     <div id="root"></div>

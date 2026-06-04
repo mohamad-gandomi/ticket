@@ -236,8 +236,9 @@ final class Database {
                 'status'      => 'unreviewed',
                 'priority'    => $priority,
                 'category_id' => $category_id,
+                'updated_at'  => current_time('mysql'),
             ],
-            ['%d', '%s', '%s', '%s', $category_id ? '%d' : '%s']
+            ['%d', '%s', '%s', '%s', $category_id ? '%d' : '%s', '%s']
         );
         return $result !== false ? (int) $this->db->insert_id : false;
     }
@@ -255,13 +256,9 @@ final class Database {
     public function delete_ticket(int $id): void {
         $attachments = $this->get_attachments_for_ticket($id);
         foreach ($attachments as $att) {
-            $upload_dir = wp_upload_dir();
-            $file_path  = trailingslashit($upload_dir['basedir']) . ltrim(
-                str_replace($upload_dir['baseurl'], '', $att['file_url']),
-                '/'
-            );
-            if (file_exists($file_path)) {
-                @unlink($file_path);
+            $path = $this->resolve_attachment_path($att['file_url']);
+            if ($path !== null && file_exists($path)) {
+                @unlink($path);
             }
         }
         $this->db->delete($this->db->prefix . 'ats_attachments', ['ticket_id' => $id], ['%d']);
@@ -269,12 +266,27 @@ final class Database {
         $this->db->delete($this->db->prefix . 'ats_tickets',     ['id'        => $id], ['%d']);
     }
 
+    public function resolve_attachment_path(string $file_url): ?string {
+        $upload_dir = wp_upload_dir();
+        // Normalise schemes so http:// vs https:// differences don't break the match.
+        $norm_url  = preg_replace('#^https?://#', '//', $file_url);
+        $norm_base = preg_replace('#^https?://#', '//', $upload_dir['baseurl']);
+        if (str_starts_with($norm_url, $norm_base)) {
+            $relative = ltrim(substr($norm_url, strlen($norm_base)), '/');
+            return trailingslashit($upload_dir['basedir']) . $relative;
+        }
+        return null;
+    }
+
     public function resolve_ticket_with_ai(int $ticket_id, string $ai_body): bool {
-        $this->db->insert(
+        $inserted = $this->db->insert(
             $this->db->prefix . 'ats_messages',
             ['ticket_id' => $ticket_id, 'user_id' => 0, 'author_type' => 'support', 'body' => $ai_body],
             ['%d', '%d', '%s', '%s']
         );
+        if ($inserted === false) {
+            return false;
+        }
         return (bool) $this->db->update(
             $this->db->prefix . 'ats_tickets',
             ['status' => 'ai_resolved', 'ai_resolved' => 1, 'updated_at' => current_time('mysql')],
@@ -302,6 +314,16 @@ final class Database {
     }
 
     // ── Messages ─────────────────────────────────────────────────────────────
+
+    public function get_message(int $id): ?array {
+        return $this->db->get_row(
+            $this->db->prepare(
+                "SELECT * FROM {$this->db->prefix}ats_messages WHERE id = %d",
+                $id
+            ),
+            ARRAY_A
+        ) ?: null;
+    }
 
     public function get_messages(int $ticket_id): array {
         return $this->db->get_results(

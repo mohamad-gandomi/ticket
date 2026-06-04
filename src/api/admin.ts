@@ -50,6 +50,8 @@ export interface Settings {
   providers: Record<string, { enabled: boolean; apiKey: string; model: string }>;
   aiTopK: number;
   aiMaxBodyChars: number;
+  allowedMimeTypes: string[];
+  maxUploadSize: number;
 }
 
 export const adminStateMap: Record<AdminState, { color: 'default'|'primary'|'success'|'warning'|'danger'|'violet'; label: string }> = {
