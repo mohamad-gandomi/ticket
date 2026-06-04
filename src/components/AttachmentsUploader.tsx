@@ -23,6 +23,27 @@ function getExt(name: string): string {
   return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : 'FILE';
 }
 
+/** Convert MIME key like "jpg|jpeg|jpe" to an accept-attribute fragment ".jpg,.jpeg,.jpe" */
+function mimeKeyToAcceptExts(key: string): string {
+  return key.split('|').map((e) => `.${e}`).join(',');
+}
+
+/** Human-readable label: first extension in uppercase */
+function mimeKeyToLabel(key: string): string {
+  return key.split('|')[0].toUpperCase();
+}
+
+/** Build the full accept string for <input type="file"> */
+function buildAccept(mimeKeys: string[]): string {
+  return mimeKeys.map(mimeKeyToAcceptExts).join(',');
+}
+
+/** Check if a File's extension matches any allowed MIME key */
+function isExtAllowed(file: File, mimeKeys: string[]): boolean {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+  return mimeKeys.some((key) => key.split('|').includes(ext));
+}
+
 function FileChip({ name, size, onRemove }: { name: string; size: number; onRemove: () => void }) {
   return (
     <div className="flex items-center gap-2 h-9 pl-2 pr-3 rounded-lg border border-line bg-white text-[12px] max-w-full">
@@ -42,35 +63,72 @@ function FileChip({ name, size, onRemove }: { name: string; size: number; onRemo
   );
 }
 
-export function AttachmentsUploader({ defaultFiles = [], onFilesChange }: {
+export function AttachmentsUploader({
+  defaultFiles = [],
+  allowedMimeTypes,
+  maxUploadSizeKb,
+  uploadError,
+  onFilesChange,
+}: {
   defaultFiles?: ExistingFile[];
+  allowedMimeTypes?: string[];
+  maxUploadSizeKb?: number;
+  uploadError?: string | null;
   onFilesChange?: (files: File[]) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [existing, setExisting] = useState<ExistingFile[]>(defaultFiles);
-  const [files, setFiles] = useState<AttachedFile[]>([]);
+  const [files, setFiles]       = useState<AttachedFile[]>([]);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Sync to parent whenever the file list changes (avoids calling setState
-  // inside another setState updater, which React prohibits)
+  const mimeKeys   = allowedMimeTypes ?? ['jpg|jpeg|jpe', 'png', 'gif', 'webp', 'pdf'];
+  const maxKb      = maxUploadSizeKb ?? 5120;
+  const maxBytes   = maxKb * 1024;
+  const acceptAttr = buildAccept(mimeKeys);
+  const formatList = mimeKeys.map(mimeKeyToLabel).join('، ');
+  const maxLabel   = maxKb >= 1024 ? `${(maxKb / 1024).toFixed(maxKb % 1024 === 0 ? 0 : 1)} MB` : `${maxKb} KB`;
+
   useEffect(() => {
     onFilesChange?.(files.map((f) => f.file));
   }, [files]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleAdd(e: React.ChangeEvent<HTMLInputElement>) {
+    setValidationError(null);
     const selected = Array.from(e.target.files ?? []);
-    const next: AttachedFile[] = selected.map((file) => ({
-      id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
-      file,
-    }));
-    setFiles((prev) => [...prev, ...next]);
     e.target.value = '';
+
+    const errors: string[] = [];
+    const valid: AttachedFile[] = [];
+
+    for (const file of selected) {
+      if (!isExtAllowed(file, mimeKeys)) {
+        errors.push(`فرمت "${getExt(file.name)}" مجاز نیست.`);
+        continue;
+      }
+      if (file.size > maxBytes) {
+        errors.push(`فایل "${file.name}" بزرگ‌تر از حد مجاز (${maxLabel}) است.`);
+        continue;
+      }
+      valid.push({
+        id: `${file.name}-${file.size}-${Date.now()}-${Math.random()}`,
+        file,
+      });
+    }
+
+    if (errors.length > 0) {
+      setValidationError(errors.join(' '));
+    }
+    if (valid.length > 0) {
+      setFiles((prev) => [...prev, ...valid]);
+    }
   }
 
   function removeFile(id: string) {
     setFiles((prev) => prev.filter((x) => x.id !== id));
   }
 
-  const hasFiles = existing.length > 0 || files.length > 0;
+  const hasFiles    = existing.length > 0 || files.length > 0;
+  const displayError = uploadError ?? validationError;
 
   return (
     <div className="flex flex-col gap-2">
@@ -78,7 +136,7 @@ export function AttachmentsUploader({ defaultFiles = [], onFilesChange }: {
 
       <button
         type="button"
-        onClick={() => inputRef.current?.click()}
+        onClick={() => { setValidationError(null); inputRef.current?.click(); }}
         className="w-full flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-line bg-surface-50 hover:border-brand hover:bg-brand-tint/30 transition py-5 px-4 cursor-pointer"
       >
         <div className="size-9 rounded-full bg-white border border-line grid place-items-center text-ink-400">
@@ -89,21 +147,26 @@ export function AttachmentsUploader({ defaultFiles = [], onFilesChange }: {
           </svg>
         </div>
         <div className="text-center">
-          <p className="text-[13px] font-medium text-ink-700">
-            برای آپلود کلیک کنید
-          </p>
-          <p className="text-[11px] text-ink-400 mt-0.5">SVG, PNG, JPG یا GIF</p>
+          <p className="text-[13px] font-medium text-ink-700">برای آپلود کلیک کنید</p>
+          <p className="text-[11px] text-ink-400 mt-0.5">{formatList}</p>
+          <p className="text-[11px] text-ink-400">حداکثر {maxLabel}</p>
         </div>
       </button>
 
       <input
         ref={inputRef}
         type="file"
-        accept=".svg,.png,.jpg,.jpeg,.gif"
+        accept={acceptAttr}
         multiple
         className="hidden"
         onChange={handleAdd}
       />
+
+      {displayError && (
+        <p className="text-[12px] text-danger text-right leading-5 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+          {displayError}
+        </p>
+      )}
 
       {hasFiles && (
         <div className="flex flex-wrap gap-2 pt-1">

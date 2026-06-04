@@ -5,10 +5,12 @@ import { PageHeader }         from '../components/PageHeader';
 import { TicketComposer }     from '../components/TicketComposer';
 import { AiLoadingPanel }     from '../components/AiLoadingPanel';
 import { ticketsApi }         from '../api/tickets';
+import { getConfig }          from '../config';
 
 export function TicketNewPage() {
   const navigate    = useNavigate();
   const filesRef    = useRef<File[]>([]);
+  const config      = getConfig();
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(payload: { title: string; body: string; priority: string; category_id?: number | null }) {
@@ -53,6 +55,8 @@ export function TicketNewPage() {
           onSubmit={handleSubmit}
           onCancel={() => navigate('/tickets')}
           onFilesChange={(files) => { filesRef.current = files; }}
+          allowedMimeTypes={config.allowedMimeTypes}
+          maxUploadSizeKb={config.maxUploadSize}
         />
       </div>
     </PageContainer>
