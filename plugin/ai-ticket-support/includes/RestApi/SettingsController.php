@@ -15,12 +15,14 @@ final class SettingsController extends AbstractController {
     private const OPTION_KEY = 'ats_settings';
 
     private const DEFAULTS = [
-        'aiEnabled'      => false,
-        'aiMode'         => 'kb_only',
-        'brandColor'     => '#0068ff',
-        'providers'      => [],
-        'aiTopK'         => 4,
-        'aiMaxBodyChars' => 1200,
+        'aiEnabled'        => false,
+        'aiMode'           => 'kb_only',
+        'brandColor'       => '#0068ff',
+        'providers'        => [],
+        'aiTopK'           => 4,
+        'aiMaxBodyChars'   => 1200,
+        'allowedMimeTypes' => ['jpg|jpeg|jpe', 'png', 'gif', 'webp', 'pdf', 'txt', 'zip', 'doc', 'docx', 'xls', 'xlsx'],
+        'maxUploadSize'    => 5120,
     ];
 
     public function register_routes(): void {
@@ -64,13 +66,20 @@ final class SettingsController extends AbstractController {
             ? $json['aiMode']
             : 'kb_only';
 
+        $all_mime_keys    = array_keys(\ATS\RestApi\TicketsController::all_allowed_mimes());
+        $raw_mimes        = isset($json['allowedMimeTypes']) && is_array($json['allowedMimeTypes'])
+            ? $json['allowedMimeTypes'] : $all_mime_keys;
+        $allowed_mime_types = array_values(array_intersect($raw_mimes, $all_mime_keys));
+
         $settings = [
-            'aiEnabled'      => (bool) $req->get_param('aiEnabled'),
-            'aiMode'         => $ai_mode,
-            'brandColor'     => sanitize_hex_color($req->get_param('brandColor')) ?: '#0068ff',
-            'providers'      => $this->sanitize_providers($providers),
-            'aiTopK'         => max(1, min(10,   (int) ($json['aiTopK']         ?? 4))),
-            'aiMaxBodyChars' => max(100, min(2000, (int) ($json['aiMaxBodyChars'] ?? 1200))),
+            'aiEnabled'        => (bool) $req->get_param('aiEnabled'),
+            'aiMode'           => $ai_mode,
+            'brandColor'       => sanitize_hex_color($req->get_param('brandColor')) ?: '#0068ff',
+            'providers'        => $this->sanitize_providers($providers),
+            'aiTopK'           => max(1, min(10,   (int) ($json['aiTopK']         ?? 4))),
+            'aiMaxBodyChars'   => max(100, min(2000, (int) ($json['aiMaxBodyChars'] ?? 1200))),
+            'allowedMimeTypes' => $allowed_mime_types ?: $all_mime_keys,
+            'maxUploadSize'    => max(1, min(102400, (int) ($json['maxUploadSize'] ?? 5120))),
         ];
 
         update_option(self::OPTION_KEY, $settings);

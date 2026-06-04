@@ -158,14 +158,18 @@ final class TicketsController extends AbstractController {
 
         $ticket = $db->get_ticket($ticket_id);
 
-        // Run AI suggestion (synchronous — prompt is small thanks to category filter)
         $settings   = (array) get_option('ats_settings', []);
         $ai_enabled = ! empty($settings['aiEnabled']);
-        $suggestion = (new AiService())->suggest($ticket, $body);
-        $db->save_ai_suggestion($ticket_id, $suggestion);
 
-        // AI was active but couldn't answer — add routing notice immediately.
-        if ($ai_enabled && $suggestion === null) {
+        if ($ai_enabled) {
+            // Run AI suggestion only when AI is actually enabled.
+            $suggestion = (new AiService())->suggest($ticket, $body);
+            $db->save_ai_suggestion($ticket_id, $suggestion);
+            if ($suggestion === null) {
+                $db->create_message($ticket_id, 0, 'system', 'سوال شما به کارشناس ارجاع داده شد و به زودی پاسخ خواهید گرفت.');
+            }
+        } else {
+            // AI disabled — route every ticket to human support immediately.
             $db->create_message($ticket_id, 0, 'system', 'سوال شما به کارشناس ارجاع داده شد و به زودی پاسخ خواهید گرفت.');
         }
 
@@ -281,8 +285,8 @@ final class TicketsController extends AbstractController {
         if ((int) $ticket['user_id'] !== $user_id) {
             return $this->forbidden();
         }
-        if (in_array($ticket['status'], ['closed', 'ai_resolved'], true)) {
-            return $this->error('ticket_closed', 'This ticket is closed.', 422);
+        if (in_array($ticket['status'], ['closed', 'ai_resolved', 'unreviewed'], true)) {
+            return $this->error('already_routed', 'تیکت قبلاً به کارشناس ارجاع داده شده است.', 422);
         }
 
         $db->create_message($id, 0, 'system', 'سوال شما به کارشناس ارجاع داده شد و به زودی پاسخ خواهید گرفت.');
@@ -310,14 +314,44 @@ final class TicketsController extends AbstractController {
             return $this->error('no_file', 'No file provided.', 400);
         }
 
+        $settings = (array) get_option('ats_settings', []);
+
+        // Validate file size against admin-configured limit (default 5 MB).
+        $max_kb   = max(1, (int) ($settings['maxUploadSize'] ?? 5120));
+        $max_bytes = $max_kb * 1024;
+        if ($_FILES['file']['size'] > $max_bytes) {
+            return $this->error('file_too_large', sprintf('حداکثر حجم مجاز %d کیلوبایت است.', $max_kb), 400);
+        }
+
+        // Build allowed MIME list from settings; fall back to safe defaults.
+        $all_mimes = self::all_allowed_mimes();
+        $saved_keys = isset($settings['allowedMimeTypes']) && is_array($settings['allowedMimeTypes'])
+            ? $settings['allowedMimeTypes']
+            : array_keys($all_mimes);
+        $allowed_mimes = array_intersect_key($all_mimes, array_flip($saved_keys));
+        if (empty($allowed_mimes)) {
+            $allowed_mimes = $all_mimes;
+        }
+
         require_once ABSPATH . 'wp-admin/includes/file.php';
 
-        $upload = wp_handle_upload($_FILES['file'], ['test_form' => false]);
+        $upload = wp_handle_upload($_FILES['file'], [
+            'test_form' => false,
+            'mimes'     => $allowed_mimes,
+        ]);
         if (isset($upload['error'])) {
             return $this->error('upload_error', $upload['error'], 400);
         }
 
         $message_id = $req->get_param('message_id') ? (int) $req->get_param('message_id') : null;
+
+        // Verify message_id belongs to this ticket (prevents cross-ticket IDOR).
+        if ($message_id !== null) {
+            $msg = $db->get_message($message_id);
+            if ($msg === null || (int) $msg['ticket_id'] !== $id) {
+                return $this->error('invalid_message', 'پیام مورد نظر متعلق به این تیکت نیست.', 422);
+            }
+        }
         $att_id = $db->create_attachment(
             $id,
             $message_id,
@@ -340,6 +374,27 @@ final class TicketsController extends AbstractController {
             'size'     => (int) filesize($upload['file']),
             'mimeType' => $upload['type'],
         ]);
+    }
+
+    /**
+     * Every MIME type the plugin is ever willing to accept.
+     * Keys must match the format WordPress uses in upload_mimes: "ext1|ext2" => "mime/type".
+     * Admin may restrict this list further via settings.
+     */
+    public static function all_allowed_mimes(): array {
+        return [
+            'jpg|jpeg|jpe' => 'image/jpeg',
+            'png'          => 'image/png',
+            'gif'          => 'image/gif',
+            'webp'         => 'image/webp',
+            'pdf'          => 'application/pdf',
+            'txt'          => 'text/plain',
+            'zip'          => 'application/zip',
+            'doc'          => 'application/msword',
+            'docx'         => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls'          => 'application/vnd.ms-excel',
+            'xlsx'         => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
     }
 
     public function categories_index(): WP_REST_Response {

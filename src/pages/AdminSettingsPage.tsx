@@ -179,8 +179,25 @@ function AiProviderCard({ provider, config, onChange }: {
 
 export function AdminSettingsPage() {
   const nav = useNavigate();
+  const ALL_MIME_OPTIONS: { key: string; label: string }[] = [
+    { key: 'jpg|jpeg|jpe', label: 'تصویر JPEG' },
+    { key: 'png',          label: 'تصویر PNG' },
+    { key: 'gif',          label: 'تصویر GIF' },
+    { key: 'webp',         label: 'تصویر WebP' },
+    { key: 'pdf',          label: 'PDF' },
+    { key: 'txt',          label: 'متن ساده (TXT)' },
+    { key: 'zip',          label: 'فایل فشرده ZIP' },
+    { key: 'doc',          label: 'Word (doc)' },
+    { key: 'docx',         label: 'Word (docx)' },
+    { key: 'xls',          label: 'Excel (xls)' },
+    { key: 'xlsx',         label: 'Excel (xlsx)' },
+  ];
+
+  const DEFAULT_MIME_KEYS = ALL_MIME_OPTIONS.map((o) => o.key);
+
   const [settings, setSettings] = useState<Settings>({
     aiEnabled: false, aiMode: 'kb_only', brandColor: '#0068ff', providers: {}, aiTopK: 4, aiMaxBodyChars: 400,
+    allowedMimeTypes: DEFAULT_MIME_KEYS, maxUploadSize: 5120,
   });
   const [saving, setSaving]               = useState(false);
   const [noProviderModal, setNoProviderModal] = useState(false);
@@ -304,6 +321,50 @@ export function AdminSettingsPage() {
               </Field>
             </div>
           )}
+
+          {/* ── File upload settings ─────────────────────────────── */}
+          <div className="flex flex-col gap-3">
+            <h3 className="text-[15px] font-bold text-ink-900">آپلود فایل</h3>
+
+            <Field
+              label="حداکثر حجم فایل (کیلوبایت)"
+              hint="کاربران نمی‌توانند فایلی بزرگ‌تر از این مقدار آپلود کنند. پیش‌فرض: ۵۱۲۰ (پنج مگابایت)."
+            >
+              <Input
+                type="number" dir="ltr" className="text-left"
+                value={String(settings.maxUploadSize ?? 5120)}
+                onChange={(e) => setSettings((s) => ({ ...s, maxUploadSize: Math.max(1, Math.min(102400, Number(e.target.value))) }))}
+              />
+            </Field>
+
+            <div className="flex flex-col gap-2">
+              <span className="text-[13px] font-bold text-ink-900 text-right">فرمت‌های مجاز</span>
+              <div className="grid grid-cols-2 gap-2">
+                {ALL_MIME_OPTIONS.map((opt) => {
+                  const checked = (settings.allowedMimeTypes ?? DEFAULT_MIME_KEYS).includes(opt.key);
+                  return (
+                    <label key={opt.key} className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        className="accent-brand"
+                        onChange={() => {
+                          setSettings((s) => {
+                            const current = s.allowedMimeTypes ?? DEFAULT_MIME_KEYS;
+                            const next = checked
+                              ? current.filter((k) => k !== opt.key)
+                              : [...current, opt.key];
+                            return { ...s, allowedMimeTypes: next };
+                          });
+                        }}
+                      />
+                      <span className="text-[12px] text-ink-700">{opt.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
 
           <Field label="رنگ برند" hint="کد رنگ HEX برند — رنگ دکمه‌ها و عناصر اصلی همین رنگ می‌شوند.">
             <div className="relative">
