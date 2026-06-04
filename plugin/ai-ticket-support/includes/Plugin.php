@@ -59,14 +59,14 @@ final class Plugin {
 
     public function add_plugin_action_links(array $links): array {
         $extra = [
-            sprintf(
-                '<a href="%s" target="_blank">%s</a>',
-                esc_url(home_url('helpdesk')),
+            'ats_user_panel'  => sprintf(
+                '<a href="%s">%s</a>',
+                esc_url(home_url('/helpdesk')),
                 esc_html__('پنل کاربری', 'ai-ticket-support')
             ),
-            sprintf(
-                '<a href="%s" target="_blank">%s</a>',
-                esc_url(home_url('helpdesk-admin')),
+            'ats_admin_panel' => sprintf(
+                '<a href="%s">%s</a>',
+                esc_url(home_url('/helpdesk-admin')),
                 esc_html__('پنل مدیریت', 'ai-ticket-support')
             ),
         ];
