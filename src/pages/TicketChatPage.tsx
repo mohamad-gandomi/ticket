@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { RichEditor }         from '../components/RichEditor';
 import { AttachmentsUploader } from '../components/AttachmentsUploader';
 import { getConfig }          from '../config';
+import { ApiError }           from '../api/client';
 import { ticketsApi, type Ticket, type Message } from '../api/tickets';
 import { adminApi, type AdminState, adminStateMap } from '../api/admin';
 import { toShamsi, relativeTime } from '../utils/date';
@@ -16,7 +17,8 @@ import { toShamsi, relativeTime } from '../utils/date';
 
 export function TicketChatPage() {
   const { id }     = useParams<{ id: string }>();
-  const { mode }   = getConfig();
+  const config     = getConfig();
+  const { mode }   = config;
   const isAdmin    = mode === 'admin';
 
   const [ticket, setTicket]     = useState<Ticket | null>(null);
@@ -26,6 +28,7 @@ export function TicketChatPage() {
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
   const [sending, setSending]         = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -48,6 +51,7 @@ export function TicketChatPage() {
   async function send() {
     if (!draft.trim() || !id) return;
     setSending(true);
+    setUploadError(null);
     try {
       const res = isAdmin
         ? await adminApi.replyToTicket(id, draft)
@@ -55,11 +59,20 @@ export function TicketChatPage() {
 
       const newMsgId = res.messages[res.messages.length - 1]?.id;
       if (newMsgId && pendingFiles.length > 0) {
-        await Promise.all(pendingFiles.map((f) => ticketsApi.uploadAttachment(id, f, newMsgId)));
-        setPendingFiles([]);
+        const results = await Promise.allSettled(
+          pendingFiles.map((f) => ticketsApi.uploadAttachment(id, f, newMsgId))
+        );
+        const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+        if (failures.length > 0) {
+          const msgs = failures.map((r) =>
+            r.reason instanceof ApiError ? r.reason.message : 'خطا در آپلود فایل'
+          );
+          setUploadError(msgs.join(' — '));
+        } else {
+          setPendingFiles([]);
+        }
       }
 
-      // Re-fetch to get messages with fresh attachment data
       const detail = await ticketsApi.detail(id);
       setMessages(detail.messages);
       setDraft('');
@@ -158,7 +171,12 @@ export function TicketChatPage() {
                 onChange={setDraft}
               />
             </div>
-            <AttachmentsUploader onFilesChange={setPendingFiles} />
+            <AttachmentsUploader
+              onFilesChange={setPendingFiles}
+              allowedMimeTypes={config.allowedMimeTypes}
+              maxUploadSizeKb={config.maxUploadSize}
+              uploadError={uploadError}
+            />
             <div className="h-px bg-line" />
             <div className="flex">
               <Button variant="primary" size="md" onClick={send} disabled={sending}>

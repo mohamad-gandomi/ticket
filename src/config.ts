@@ -11,6 +11,8 @@ export interface AtsConfig {
   nonce: string;
   assetsUrl: string;
   basePath: string;
+  allowedMimeTypes: string[];
+  maxUploadSize: number;
   user: AtsUser;
 }
 
@@ -28,11 +30,13 @@ export function getConfig(): AtsConfig {
   // Dev-mode fallback
   const isAdmin = window.location.pathname.startsWith('/helpdesk-admin');
   return {
-    mode:       isAdmin ? 'admin' : 'user',
-    restUrl:    'http://localhost/wp-json/ats/v1',
-    nonce:      '',
-    assetsUrl:  '/',
-    basePath:   isAdmin ? '/helpdesk-admin' : '/helpdesk',
+    mode:             isAdmin ? 'admin' : 'user',
+    restUrl:          'http://localhost/wp-json/ats/v1',
+    nonce:            '',
+    assetsUrl:        '/',
+    basePath:         isAdmin ? '/helpdesk-admin' : '/helpdesk',
+    allowedMimeTypes: ['jpg|jpeg|jpe', 'png', 'gif', 'webp', 'pdf', 'txt', 'zip', 'doc', 'docx', 'xls', 'xlsx'],
+    maxUploadSize:    5120,
     user: { id: 1, name: 'Dev User', email: 'dev@example.com', isAdmin },
   };
 }

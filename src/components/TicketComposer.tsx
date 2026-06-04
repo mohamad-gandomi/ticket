@@ -20,6 +20,8 @@ interface TicketComposerProps {
   onFilesChange?: (files: File[]) => void;
   submitLabel?: string;
   defaultMessage?: string;
+  allowedMimeTypes?: string[];
+  maxUploadSizeKb?: number;
 }
 
 const PRIORITIES = [
@@ -36,6 +38,8 @@ export function TicketComposer({
   onFilesChange,
   submitLabel = 'ارسال تیکت',
   defaultMessage: _defaultMessage,
+  allowedMimeTypes,
+  maxUploadSizeKb,
 }: TicketComposerProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoryId, setCategoryId] = useState<string>('');
@@ -120,7 +124,11 @@ export function TicketComposer({
         {errors.body && <span className="text-[12px] text-danger text-right">لطفاً پیام تیکت را وارد کنید</span>}
       </div>
 
-      <AttachmentsUploader onFilesChange={onFilesChange} />
+      <AttachmentsUploader
+        onFilesChange={onFilesChange}
+        allowedMimeTypes={allowedMimeTypes}
+        maxUploadSizeKb={maxUploadSizeKb}
+      />
 
       <div className="h-px bg-line my-1" />
 

@@ -46,13 +46,15 @@ $admin_path = (string) parse_url(home_url('helpdesk-admin'), PHP_URL_PATH);
 $base_path  = $mode === 'admin' ? $admin_path : $user_path;
 
 $config = [
-    'mode'       => $mode,
-    'restUrl'    => rest_url('ats/v1'),
-    'nonce'      => wp_create_nonce('wp_rest'),
-    'assetsUrl'  => $dist_url,
-    'basePath'   => $base_path,
-    'brandColor' => $brand_hex,
-    'user'       => [
+    'mode'             => $mode,
+    'restUrl'          => rest_url('ats/v1'),
+    'nonce'            => wp_create_nonce('wp_rest'),
+    'assetsUrl'        => $dist_url,
+    'basePath'         => $base_path,
+    'brandColor'       => $brand_hex,
+    'allowedMimeTypes' => $saved_settings['allowedMimeTypes'] ?? ['jpg|jpeg|jpe', 'png', 'gif', 'webp', 'pdf', 'txt', 'zip', 'doc', 'docx', 'xls', 'xlsx'],
+    'maxUploadSize'    => (int) ($saved_settings['maxUploadSize'] ?? 5120),
+    'user'             => [
         'id'      => $user->ID,
         'name'    => $user->display_name,
         'email'   => $user->user_email,
