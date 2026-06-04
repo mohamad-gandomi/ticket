@@ -33,7 +33,7 @@ final class Plugin {
         add_action('rest_api_init',     [$this,                'register_rest_routes']);
         add_action('admin_notices',     [$this,                'maybe_show_permalink_notice']);
         add_action('admin_notices',     [$this,                'maybe_show_activation_notice']);
-        add_filter('plugin_action_links_' . plugin_basename(ATS_FILE), [$this, 'add_plugin_action_links']);
+        add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
     }
 
     public function maybe_show_activation_notice(): void {
@@ -57,20 +57,13 @@ final class Plugin {
         echo '</p></div>';
     }
 
-    public function add_plugin_action_links(array $links): array {
-        $extra = [
-            'ats_user_panel'  => sprintf(
-                '<a href="%s">%s</a>',
-                esc_url(home_url('/helpdesk')),
-                esc_html__('پنل کاربری', 'ai-ticket-support')
-            ),
-            'ats_admin_panel' => sprintf(
-                '<a href="%s">%s</a>',
-                esc_url(home_url('/helpdesk-admin')),
-                esc_html__('پنل مدیریت', 'ai-ticket-support')
-            ),
-        ];
-        return array_merge($extra, $links);
+    public function add_plugin_row_meta(array $links, string $file): array {
+        if ($file !== plugin_basename(ATS_FILE)) {
+            return $links;
+        }
+        $links['ats_user_panel']  = sprintf('<a href="%s">%s</a>', esc_url(home_url('/helpdesk')), esc_html__('پنل کاربری', 'ai-ticket-support'));
+        $links['ats_admin_panel'] = sprintf('<a href="%s">%s</a>', esc_url(home_url('/helpdesk-admin')), esc_html__('پنل مدیریت', 'ai-ticket-support'));
+        return $links;
     }
 
     public function maybe_show_permalink_notice(): void {
