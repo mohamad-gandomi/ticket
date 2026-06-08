@@ -24,6 +24,7 @@ export function TicketChatPage() {
   const [ticket, setTicket]     = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft]             = useState('');
+  const [clearKey, setClearKey]       = useState(0);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
@@ -76,6 +77,7 @@ export function TicketChatPage() {
       const detail = await ticketsApi.detail(id);
       setMessages(detail.messages);
       setDraft('');
+      setClearKey((k) => k + 1);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'خطا در ارسال پیام');
     } finally {
@@ -169,6 +171,7 @@ export function TicketChatPage() {
               <RichEditor
                 placeholder="مشکل خود را با جزئیات کامل توضیح دهید..."
                 onChange={setDraft}
+                clearTrigger={clearKey}
               />
             </div>
             <AttachmentsUploader

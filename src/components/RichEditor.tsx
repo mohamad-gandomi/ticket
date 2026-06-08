@@ -5,9 +5,10 @@ interface RichEditorProps {
   placeholder?: string;
   defaultValue?: string;
   onChange?: (html: string) => void;
+  clearTrigger?: number;
 }
 
-export function RichEditor({ placeholder = '', defaultValue, onChange }: RichEditorProps) {
+export function RichEditor({ placeholder = '', defaultValue, onChange, clearTrigger }: RichEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const savedRange = useRef<Range | null>(null);
   const [isEmpty, setIsEmpty] = useState(!defaultValue);
@@ -17,6 +18,15 @@ export function RichEditor({ placeholder = '', defaultValue, onChange }: RichEdi
       editorRef.current.innerHTML = defaultValue;
     }
   }, []);
+
+  useEffect(() => {
+    if (clearTrigger === undefined || clearTrigger === 0) return;
+    if (editorRef.current) {
+      editorRef.current.innerHTML = '';
+      setIsEmpty(true);
+      onChange?.('');
+    }
+  }, [clearTrigger]);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
 

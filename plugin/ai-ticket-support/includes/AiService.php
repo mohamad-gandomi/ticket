@@ -57,23 +57,34 @@ SYS;
 SYS;
 
     public function suggest(array $ticket, string $user_message): ?string {
+        $debug = defined('WP_DEBUG_LOG') && WP_DEBUG_LOG;
+
         // Load settings once for this request.
         $settings = (array) get_option('ats_settings', []);
 
         $client = $this->resolve_client($settings);
         if ($client === null) {
+            if ($debug) {
+                error_log('ATS AiService: skipping AI call — provider not configured or API key missing.');
+            }
             return null;
         }
 
         $category_id = $ticket['category_id'] ? (int) $ticket['category_id'] : null;
         $pool        = $this->load_answers($category_id);
         if (empty($pool)) {
+            if ($debug) {
+                error_log('ATS AiService: skipping AI call — knowledge base is empty.');
+            }
             return null;
         }
 
         $top_k = max(1, min(10, (int) ($settings['aiTopK'] ?? self::TOP_K)));
         $top   = $this->top_k($user_message, $pool, $top_k);
         if (empty($top)) {
+            if ($debug) {
+                error_log('ATS AiService: skipping AI call — no keyword overlap found for ticket #' . ($ticket['id'] ?? '?'));
+            }
             return null; // no keyword overlap — skip AI call entirely
         }
 
@@ -84,14 +95,45 @@ SYS;
             ? self::SYSTEM_PROMPT_AI_ENHANCED
             : self::SYSTEM_PROMPT_KB_ONLY;
 
-        $result = $client->respond($model, $system_prompt, $prompt);
+        if ($debug) {
+            error_log('ATS AiService: calling AI model "' . $model . '" for ticket #' . ($ticket['id'] ?? '?') . ' with ' . count($top) . ' KB item(s).');
+        }
 
-        if ($result === null || mb_stripos($result, 'پاسخ مناسبی یافت نشد') !== false) {
+        try {
+            $result = $client->respond($model, $system_prompt, $prompt);
+        } catch (\Throwable $e) {
+            error_log('ATS AiService: exception during AI call — ' . $e->getMessage());
+            return null;
+        }
+
+        if ($result === null) {
+            if ($debug) {
+                error_log('ATS AiService: AI call returned null for ticket #' . ($ticket['id'] ?? '?'));
+            }
+            return null;
+        }
+
+        if (mb_stripos($result, 'پاسخ مناسبی یافت نشد') !== false) {
+            if ($debug) {
+                error_log('ATS AiService: AI returned no-answer signal for ticket #' . ($ticket['id'] ?? '?'));
+            }
             return null;
         }
 
         $result = trim($result);
-        return $result !== '' ? $result : null;
+
+        if ($result === '') {
+            if ($debug) {
+                error_log('ATS AiService: AI returned empty response for ticket #' . ($ticket['id'] ?? '?'));
+            }
+            return null;
+        }
+
+        if ($debug) {
+            error_log('ATS AiService: AI response for ticket #' . ($ticket['id'] ?? '?') . ' — ' . mb_substr($result, 0, 200) . (mb_strlen($result) > 200 ? '…' : ''));
+        }
+
+        return $result;
     }
 
     // ── Retrieval ─────────────────────────────────────────────────────────────
