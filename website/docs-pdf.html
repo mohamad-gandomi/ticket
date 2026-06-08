@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مستندات — WP AI Support</title>
+  <style>
+    @font-face {
+      font-family: 'Ravi';
+      src: url('fonts/Ravi-VF.ttf') format('truetype');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Ravi', sans-serif;
+      font-size: 13px;
+      color: #1f2937;
+      background: #fff;
+      direction: rtl;
+      line-height: 1.9;
+    }
+
+    @page {
+      size: A4;
+      margin: 20mm 18mm 20mm 18mm;
+      @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-family: 'Ravi', sans-serif;
+        font-size: 10px;
+        color: #9ca3af;
+      }
+    }
+
+    /* ── Cover page ─────────────────────────────── */
+    .cover {
+      page-break-after: always;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 250mm;
+      text-align: center;
+      gap: 1.2rem;
+    }
+    .cover-logo {
+      width: 56px; height: 56px;
+      background: #0068ff;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cover-logo svg { width: 28px; height: 28px; }
+    .cover h1 { font-size: 28px; font-weight: 900; color: #111827; }
+    .cover .sub { font-size: 15px; color: #6b7280; }
+    .cover .badge {
+      display: inline-block;
+      background: #e8f1ff; color: #1e40af;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: .3rem 1rem;
+      font-size: 12px; font-weight: 600;
+    }
+    .cover .url { font-size: 12px; color: #9ca3af; margin-top: 2rem; }
+
+    /* ── TOC ────────────────────────────────────── */
+    .toc-page { page-break-after: always; }
+    .toc-title { font-size: 20px; font-weight: 800; color: #111827; border-bottom: 2px solid #e5e7eb; padding-bottom: .6rem; margin-bottom: 1.2rem; }
+    .toc-list { list-style: none; }
+    .toc-list li { display: flex; align-items: baseline; gap: .3rem; padding: .28rem 0; font-size: 13px; }
+    .toc-list li .toc-num { font-weight: 700; color: #0068ff; min-width: 1.6rem; }
+    .toc-list li .toc-dots { flex: 1; border-bottom: 1px dotted #d1d5db; margin: 0 .35rem .2rem; }
+    .toc-list li .toc-pg { color: #9ca3af; font-size: 11px; }
+
+    /* ── Section headings ──────────────────────── */
+    h2 {
+      font-size: 20px; font-weight: 800; color: #111827;
+      margin: 2rem 0 .9rem;
+      padding-bottom: .6rem;
+      border-bottom: 1.5px solid #e5e7eb;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 15px; font-weight: 700; color: #1f2937;
+      margin: 1.4rem 0 .5rem;
+      page-break-after: avoid;
+    }
+    p { font-size: 13px; color: #374151; line-height: 1.95; margin-bottom: .85rem; }
+
+    ul, ol { margin: .6rem 0 .9rem; padding-right: 1.4rem; }
+    li { font-size: 13px; color: #374151; line-height: 1.9; margin-bottom: .2rem; }
+    ul { list-style: disc; }
+    ol { list-style: decimal; }
+
+    code {
+      font-size: 11.5px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: .1em .38em;
+      font-family: 'Courier New', monospace;
+      color: #be185d;
+    }
+
+    /* ── Note boxes ─────────────────────────────── */
+    .note {
+      border-radius: 10px; padding: .85rem 1rem;
+      font-size: 12.5px; line-height: 1.85;
+      margin: 1rem 0;
+      display: flex; gap: .65rem; align-items: flex-start;
+      page-break-inside: avoid;
+    }
+    .note svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: .15rem; }
+    .note-info  { background: #e8f1ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .note-warn  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .note-tip   { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+
+    /* ── Step badges ────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: .85rem; margin: 1rem 0 1.25rem; }
+    .step-row { display: flex; gap: .75rem; }
+    .step-badge {
+      min-width: 26px; height: 26px;
+      border-radius: 7px; background: #0068ff; color: #fff;
+      font-weight: 700; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: .2rem;
+    }
+    .step-content p { margin-bottom: .25rem; }
+    .step-content p:first-child { font-weight: 600; color: #111827; margin-bottom: .15rem; }
+
+    /* ── Table ──────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; margin: .85rem 0 1.25rem; font-size: 12.5px; page-break-inside: avoid; }
+    thead tr { border-bottom: 1.5px solid #d1d5db; }
+    th { text-align: right; padding: .45rem .6rem; font-weight: 700; color: #374151; }
+    td { padding: .45rem .6rem; color: #4b5563; border-bottom: 1px solid #f3f4f6; }
+    tr:nth-child(even) td { background: #f9fafb; }
+
+    /* ── Section separator ──────────────────────── */
+    section { page-break-inside: avoid; }
+    section + section { margin-top: 1.5rem; }
+
+    /* ── Footer rule ────────────────────────────── */
+    .doc-footer {
+      margin-top: 3rem; padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; color: #9ca3af;
+    }
+    .doc-footer a {
+      background: #0068ff; color: #fff;
+      border-radius: 7px; padding: .3rem .9rem;
+      font-size: 11px; font-weight: 600;
+      text-decoration: none;
+    }
+
+    a { color: #0068ff; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ COVER ═══════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-logo">
+    <svg fill="none" stroke="white" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+    </svg>
+  </div>
+  <h1>WP AI Support</h1>
+  <p class="sub">پلاگین هوشمند پشتیبانی تیکت‌محور برای وردپرس</p>
+  <span class="badge">مستندات رسمی</span>
+  <p class="url">wpaisupport.ir</p>
+</div>
+
+<!-- ═══════════════ TABLE OF CONTENTS ═══════════════════════════════════════ -->
+<div class="toc-page">
+  <div class="toc-title">فهرست مطالب</div>
+  <ol class="toc-list">
+    <li><span class="toc-num">۱</span><span>معرفی</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۲</span><span>نصب پلاگین</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۳</span><span>راه‌اندازی سریع</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۴</span><span>رنگ برند</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۵</span><span>تنظیمات هوش مصنوعی</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۶</span><span>ارائه‌دهنده: GapGPT</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۷</span><span>دسته‌بندی‌ها</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۸</span><span>پاسخ‌های آماده</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۹</span><span>تیکت از دید کاربر</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۱۰</span><span>مدیریت تیکت (ادمین)</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۱۱</span><span>وضعیت‌های تیکت</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۱۲</span><span>پاسخ هوشمند</span><span class="toc-dots"></span></li>
+    <li><span class="toc-num">۱۳</span><span>سوالات متداول</span><span class="toc-dots"></span></li>
+  </ol>
+</div>
+
+<!-- ═══════════════ CONTENT ══════════════════════════════════════════════════ -->
+<div class="prose">
+
+  <!-- 1 -->
+  <section id="intro">
+    <h2>۱. معرفی</h2>
+    <p>
+      <strong>WP AI Support</strong> یک پلاگین وردپرس برای مدیریت حرفه‌ای تیکت‌های پشتیبانی است.
+      این پلاگین با کمک هوش مصنوعی، پایگاه دانش شما را می‌خواند و به طور خودکار به سوالات مشتریان پاسخ می‌دهد.
+    </p>
+    <p>
+      اگر هوش مصنوعی پاسخ مناسبی پیدا کند، مشتری آن را می‌بیند و می‌تواند تأیید کند یا از پشتیبان انسانی کمک بخواهد.
+      اگر پاسخی یافت نشود، تیکت به صف کارشناسان ارجاع می‌شود.
+    </p>
+    <div class="note note-info">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>این پلاگین به <strong>WordPress 6.0</strong> یا بالاتر و <strong>PHP 8.1</strong> یا بالاتر نیاز دارد.</span>
+    </div>
+    <h3>قابلیت‌های اصلی</h3>
+    <ul>
+      <li>پاسخ‌دهی هوشمند بر اساس پایگاه دانش اختصاصی شما</li>
+      <li>مدیریت تیکت با صف، اولویت، وضعیت و جستجو</li>
+      <li>پایگاه دانش با دسته‌بندی و پاسخ‌های آماده</li>
+      <li>پیوست فایل و تصویر در تیکت‌ها</li>
+      <li>شخصی‌سازی رنگ برند</li>
+      <li>پنل جداگانه برای کاربر و ادمین</li>
+      <li>پشتیبانی کامل از زبان فارسی و RTL</li>
+    </ul>
+  </section>
+
+  <!-- 2 -->
+  <section id="install">
+    <h2>۲. نصب پلاگین</h2>
+    <p>پلاگین WP AI Support را از <a href="https://www.rtl-theme.com/">راستچین</a> تهیه کنید. پس از دریافت فایل zip، مراحل زیر را دنبال کنید:</p>
+    <div class="steps">
+      <div class="step-row">
+        <div class="step-badge">۱</div>
+        <div class="step-content">
+          <p>وارد پیشخوان وردپرس شوید</p>
+          <p>از منو به <code>افزونه‌ها ← افزودن</code> بروید.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-badge">۲</div>
+        <div class="step-content">
+          <p>آپلود فایل zip</p>
+          <p>روی «بارگذاری افزونه» کلیک کنید، فایل zip را انتخاب و آپلود کنید.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-badge">۳</div>
+        <div class="step-content">
+          <p>فعال‌سازی</p>
+          <p>روی «فعال‌سازی افزونه» کلیک کنید. پلاگین جداول پایگاه داده را به صورت خودکار می‌سازد.</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-badge">۴</div>
+        <div class="step-content">
+          <p>دسترسی به پنل</p>
+          <p>پنل کاربر: <code>yoursite.com/helpdesk</code><br>پنل ادمین: <code>yoursite.com/helpdesk-admin</code></p>
+        </div>
+      </div>
+    </div>
+    <div class="note note-warn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <span>برای دسترسی به پنل ادمین باید دسترسی <strong>Administrator</strong> در وردپرس داشته باشید.</span>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="quick">
+    <h2>۳. راه‌اندازی سریع</h2>
+    <p>پس از نصب، این مسیر سریع‌ترین راه برای راه‌اندازی کامل پلاگین است:</p>
+    <ol>
+      <li>به <strong>پایگاه دانش ← دسته‌بندی‌ها</strong> بروید و دسته‌های مرتبط با کسب‌وکارتان را بسازید.</li>
+      <li>در <strong>پایگاه دانش ← پاسخ‌های آماده</strong>، پاسخ سوالات رایج مشتریانتان را وارد کنید.</li>
+      <li>به <strong>تنظیمات</strong> بروید و رنگ برند خود را تنظیم کنید.</li>
+      <li>در تنظیمات، کلید API GapGPT را وارد کنید و پاسخ هوشمند را فعال کنید.</li>
+      <li>لینک <code>yoursite.com/helpdesk</code> را به مشتریانتان بدهید.</li>
+    </ol>
+    <div class="note note-tip">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>هرچه پایگاه دانش شما غنی‌تر باشد، کیفیت پاسخ‌های هوش مصنوعی بهتر است. از همان ابتدا پاسخ‌های دقیق و کامل وارد کنید.</span>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="brand">
+    <h2>۴. رنگ برند</h2>
+    <p>
+      در صفحه <strong>تنظیمات</strong> می‌توانید رنگ برند پلاگین را تغییر دهید.
+      این رنگ روی دکمه‌ها، لینک‌ها و عناصر اصلی رابط کاربری اعمال می‌شود.
+    </p>
+    <p>
+      کد رنگ را به فرمت HEX وارد کنید (مثلاً <code>#0068ff</code>). تغییر رنگ بلافاصله در پیش‌نمایش قابل مشاهده است.
+      پس از ذخیره، رنگ جدید برای همه کاربران نمایش داده می‌شود.
+    </p>
+    <div class="note note-info">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>رنگ پیش‌فرض <code>#0068ff</code> است. برای بهترین تجربه، از رنگ‌های با کنتراست کافی استفاده کنید.</span>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="ai-set">
+    <h2>۵. تنظیمات هوش مصنوعی</h2>
+    <p>در صفحه تنظیمات، بخش <strong>شخصی‌سازی</strong> گزینه‌های زیر را دارید:</p>
+
+    <h3>پاسخ هوشمند</h3>
+    <p>
+      با فعال کردن این گزینه، هنگام ثبت هر تیکت جدید، هوش مصنوعی پایگاه دانش را بررسی می‌کند و اگر پاسخ مناسبی یافت، آن را به کاربر نشان می‌دهد.
+    </p>
+    <div class="note note-warn">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <span>برای فعال کردن پاسخ هوشمند، ابتدا باید یک ارائه‌دهنده هوش مصنوعی را از بخش یکپارچه‌سازی فعال کنید.</span>
+    </div>
+
+    <h3>حالت پاسخ‌دهی</h3>
+    <ul>
+      <li><strong>فقط پایگاه دانش:</strong> هوش مصنوعی فقط از اطلاعات پایگاه دانش شما استفاده می‌کند. اگر پاسخ نباشد، تیکت به کارشناس ارجاع می‌شود.</li>
+      <li><strong>پایگاه دانش + دانش هوش مصنوعی:</strong> اگر پایگاه دانش کافی نبود، هوش مصنوعی از دانش عمومی خودش هم کمک می‌گیرد.</li>
+    </ul>
+
+    <h3>تعداد پاسخ ارسالی (TOP K)</h3>
+    <p>
+      سیستم ابتدا پایگاه دانش را بر اساس کلیدواژه‌های تیکت امتیازدهی می‌کند، سپس بهترین N پاسخ را به هوش مصنوعی می‌فرستد.
+      عدد بزرگ‌تر = پاسخ دقیق‌تر ولی هزینه بیشتر. پیش‌فرض: ۴
+    </p>
+
+    <h3>حداکثر طول هر پاسخ (MAX BODY)</h3>
+    <p>
+      بدنه هر پاسخ آماده تا این تعداد کاراکتر به هوش مصنوعی فرستاده می‌شود.
+      عدد کمتر = هزینه پایین‌تر. پیش‌فرض: ۴۰۰ کاراکتر
+    </p>
+  </section>
+
+  <!-- 6 -->
+  <section id="provider">
+    <h2>۶. ارائه‌دهنده: GapGPT</h2>
+    <p>
+      WP AI Support در حال حاضر از سرویس <strong>GapGPT</strong> پشتیبانی می‌کند.
+      GapGPT یک سرویس ایرانی هوش مصنوعی با پشتیبانی کامل از زبان فارسی است و به مدل‌های مختلف از جمله GPT, Claude, Gemini و مدل‌های بومی دسترسی دارد.
+    </p>
+
+    <h3>دریافت کلید API</h3>
+    <ol>
+      <li>به <a href="https://gapgpt.app/platform-v2/tokens">gapgpt.app/platform-v2/tokens</a> بروید.</li>
+      <li>یک توکن جدید بسازید.</li>
+      <li>توکن را کپی کنید و در تنظیمات پلاگین (بخش یکپارچه‌سازی) وارد کنید.</li>
+    </ol>
+
+    <h3>انتخاب مدل</h3>
+    <p>پس از وارد کردن کلید، می‌توانید مدل هوش مصنوعی را انتخاب کنید. توصیه می‌شود:</p>
+    <ul>
+      <li><code>gapgpt-qwen-3.5</code> — سریع و اقتصادی (پیش‌فرض)</li>
+      <li><code>gpt-4o</code> — دقیق‌تر، برای پایگاه دانش پیچیده</li>
+      <li><code>gpt-4o-mini</code> — تعادل بین سرعت و دقت</li>
+    </ul>
+
+    <h3>تست اتصال</h3>
+    <p>
+      پس از وارد کردن کلید API، روی دکمه <strong>تست اتصال</strong> کلیک کنید.
+      اگر اتصال موفق بود، می‌توانید ارائه‌دهنده را فعال کنید.
+    </p>
+    <div class="note note-tip">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>اگر پایگاه دانش شما شامل مراحل دقیق و اعداد مشخص است، از مدل‌های قوی‌تر مثل <code>gpt-4o</code> استفاده کنید تا هیچ جزئیاتی حذف نشود.</span>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section id="categories">
+    <h2>۷. دسته‌بندی‌ها</h2>
+    <p>
+      دسته‌بندی‌ها به شما کمک می‌کنند پایگاه دانش را سازماندهی کنید.
+      هر دسته‌بندی یک عنوان و توضیحات دارد.
+    </p>
+    <p>
+      وقتی مشتری تیکت ثبت می‌کند، می‌تواند دسته‌بندی مرتبط را انتخاب کند.
+      بج <strong>مرتبط</strong> روی هر دسته، تعداد پاسخ‌های آماده آن دسته را نشان می‌دهد.
+    </p>
+    <h3>مدیریت دسته‌بندی‌ها</h3>
+    <ul>
+      <li>از منو <strong>پایگاه دانش ← دسته‌بندی‌ها</strong> وارد شوید.</li>
+      <li>با دکمه «افزودن دسته» دسته جدید بسازید.</li>
+      <li>برای ویرایش یا حذف، از آیکون‌های کنار هر دسته استفاده کنید.</li>
+      <li>حذف دسته، پاسخ‌های آماده آن دسته را حذف نمی‌کند — فقط دسته‌بندی آن‌ها برداشته می‌شود.</li>
+    </ul>
+  </section>
+
+  <!-- 8 -->
+  <section id="answers">
+    <h2>۸. پاسخ‌های آماده</h2>
+    <p>
+      پاسخ‌های آماده همان پایگاه دانش شما هستند. هوش مصنوعی این پاسخ‌ها را می‌خواند و بر اساس آن‌ها به کاربر جواب می‌دهد.
+    </p>
+    <h3>نکات مهم برای نوشتن پاسخ‌های مؤثر</h3>
+    <ul>
+      <li>مراحل را شماره‌گذاری کنید — هوش مصنوعی همه مراحل را دقیقاً بازتولید می‌کند.</li>
+      <li>اعداد و مشخصات دقیق (مثل ۷۵۵، ۶۴۴) را عیناً بنویسید.</li>
+      <li>هر پاسخ یک موضوع مشخص داشته باشد.</li>
+      <li>از HTML ویرایشگر استفاده کنید تا پاسخ‌ها خوانا باشند.</li>
+    </ul>
+    <h3>فیلتر بر اساس دسته</h3>
+    <p>در صفحه پاسخ‌های آماده، می‌توانید با منوی بالای صفحه فقط پاسخ‌های یک دسته خاص را ببینید.</p>
+    <div class="note note-info">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>هوش مصنوعی همیشه کل پایگاه دانش را بررسی می‌کند — حتی اگر کاربر دسته اشتباهی انتخاب کرده باشد. امتیازدهی کلیدواژه‌ای مرتبط‌ترین پاسخ‌ها را پیدا می‌کند.</span>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="ticket-user">
+    <h2>۹. تیکت از دید کاربر</h2>
+    <p>
+      مشتریان از آدرس <code>yoursite.com/helpdesk</code> وارد می‌شوند.
+      برای ثبت تیکت باید در وردپرس حساب کاربری داشته باشند.
+    </p>
+    <h3>ثبت تیکت جدید</h3>
+    <ol>
+      <li>روی «تیکت جدید» کلیک کنید.</li>
+      <li>عنوان، دسته‌بندی و اولویت را مشخص کنید.</li>
+      <li>متن سوال را بنویسید (می‌توانید فایل پیوست کنید).</li>
+      <li>روی «ارسال» کلیک کنید.</li>
+    </ol>
+    <p>اگر هوش مصنوعی پاسخی پیدا کند، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود و دو گزینه دارد:</p>
+    <ul>
+      <li><strong>مشکل حل شد:</strong> تیکت با پاسخ هوشمند بسته می‌شود.</li>
+      <li><strong>ادامه با پشتیبان:</strong> پیام ارجاع به کارشناس در چت ظاهر می‌شود.</li>
+    </ul>
+  </section>
+
+  <!-- 10 -->
+  <section id="ticket-admin">
+    <h2>۱۰. مدیریت تیکت (ادمین)</h2>
+    <p>ادمین از آدرس <code>yoursite.com/helpdesk-admin</code> وارد پنل مدیریت می‌شود.</p>
+    <h3>صف تیکت‌ها</h3>
+    <p>تیکت‌ها بر اساس وضعیت نمایش داده می‌شوند. می‌توانید:</p>
+    <ul>
+      <li>با کلیک روی تیکت، مکالمه را باز کنید و پاسخ دهید.</li>
+      <li>وضعیت تیکت را تغییر دهید.</li>
+      <li>تیکت را حذف کنید.</li>
+      <li>با فیلتر وضعیت و جستجو، تیکت‌ها را پیدا کنید.</li>
+    </ul>
+    <h3>پاسخ دادن</h3>
+    <p>
+      در صفحه تیکت، پاسخ خود را تایپ کنید و ارسال کنید.
+      پس از ارسال پاسخ ادمین، وضعیت تیکت به «پاسخ داده شده» تغییر می‌کند.
+    </p>
+  </section>
+
+  <!-- 11 -->
+  <section id="statuses">
+    <h2>۱۱. وضعیت‌های تیکت</h2>
+    <p>هر تیکت یکی از وضعیت‌های زیر را دارد:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>وضعیت</th>
+          <th>توضیح</th>
+          <th>نمایش به کاربر</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>بررسی نشده</code></td><td>تیکت تازه ثبت شده</td><td>در انتظار</td></tr>
+        <tr><td><code>درحال بررسی</code></td><td>ادمین در حال بررسی است</td><td>در انتظار</td></tr>
+        <tr><td><code>در انتظار پاسخ</code></td><td>ادمین پاسخ داده، منتظر کاربر</td><td>پاسخ داده شده</td></tr>
+        <tr><td><code>پاسخ داده شده</code></td><td>کاربر جواب داده</td><td>پاسخ داده شده</td></tr>
+        <tr><td><code>بسته شده</code></td><td>تیکت بسته شده</td><td>بسته شده</td></tr>
+        <tr><td><code>پاسخ هوشمند</code></td><td>با تأیید کاربر از پاسخ AI بسته شد</td><td>بسته شده</td></tr>
+        <tr><td><code>اسپم</code></td><td>تیکت اسپم</td><td>در انتظار</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 12 -->
+  <section id="ai-answer">
+    <h2>۱۲. پاسخ هوشمند</h2>
+    <p>هنگام ثبت تیکت جدید، اگر هوش مصنوعی فعال باشد، سیستم این مراحل را طی می‌کند:</p>
+    <ol>
+      <li>پایگاه دانش بر اساس کلیدواژه‌های تیکت امتیازدهی می‌شود.</li>
+      <li>اگر هیچ همپوشانی کلیدواژه‌ای وجود نداشته باشد، تیکت مستقیم به صف ادمین می‌رود.</li>
+      <li>بهترین N پاسخ (TOP K) به هوش مصنوعی فرستاده می‌شود.</li>
+      <li>هوش مصنوعی یک پاسخ جدید بر اساس پایگاه دانش می‌نویسد.</li>
+      <li>اگر پاسخ تولید شد، کاربر به صفحه «پاسخ هوشمند» هدایت می‌شود.</li>
+      <li>اگر پاسخی یافت نشد، پیام ارجاع به کارشناس ظاهر می‌شود.</li>
+    </ol>
+    <div class="note note-tip">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span>تیکت‌های حل‌شده با AI در پنل ادمین با بج «پاسخ هوشمند» مشخص می‌شوند و در آمار جداگانه شمرده می‌شوند.</span>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section id="faq">
+    <h2>۱۳. سوالات متداول</h2>
+
+    <h3>آیا می‌توانم چند ارائه‌دهنده هوش مصنوعی را همزمان فعال کنم؟</h3>
+    <p>خیر. در هر زمان فقط یک ارائه‌دهنده می‌تواند فعال باشد. با فعال کردن یک ارائه‌دهنده، بقیه به صورت خودکار غیرفعال می‌شوند.</p>
+
+    <h3>اگر کاربر دسته اشتباهی انتخاب کند چه می‌شود؟</h3>
+    <p>هیچ مشکلی نیست. سیستم همیشه کل پایگاه دانش را بررسی می‌کند و بر اساس کلیدواژه‌های متن تیکت، مرتبط‌ترین پاسخ‌ها را پیدا می‌کند.</p>
+
+    <h3>آیا هوش مصنوعی اطلاعات بیرون از پایگاه دانش استفاده می‌کند؟</h3>
+    <p>در حالت «فقط پایگاه دانش» خیر — پاسخ کاملاً بر اساس اطلاعات شماست. در حالت «پایگاه دانش + هوش مصنوعی» اگر اطلاعات کافی نباشد، از دانش عمومی هم کمک می‌گیرد.</p>
+
+    <h3>آیا پاسخ‌های AI ذخیره می‌شوند؟</h3>
+    <p>بله. هر پاسخ AI در پایگاه داده وردپرس ذخیره می‌شود و ادمین می‌تواند آن را در پنل مدیریت ببیند.</p>
+
+    <h3>آیا کاربران برای ثبت تیکت باید عضو شوند؟</h3>
+    <p>بله. کاربران باید حساب کاربری وردپرس داشته باشند و وارد شده باشند تا بتوانند تیکت ثبت کنند.</p>
+
+    <h3>آیا می‌توانم پلاگین را در وردپرس نصب‌شده در زیرشاخه استفاده کنم؟</h3>
+    <p>بله. پلاگین مسیر وردپرس را به صورت خودکار تشخیص می‌دهد و React Router را بر اساس آن تنظیم می‌کند.</p>
+  </section>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <span>WP AI Support — wpaisupport.ir</span>
+    <a href="https://www.rtl-theme.com/">خرید پلاگین از راستچین</a>
+  </div>
+
+</div><!-- /.prose -->
+</body>
+</html>
