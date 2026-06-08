@@ -36,21 +36,22 @@
     /* ── Cover page ─────────────────────────────── */
     .cover {
       page-break-after: always;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 250mm;
       text-align: center;
-      gap: 1.2rem;
+      /* Push content to vertical center: A4 printable height ~257mm, pad ~90mm top */
+      padding-top: 90mm;
+      padding-bottom: 90mm;
     }
+    .cover > * { display: block; margin-left: auto; margin-right: auto; }
+    .cover > * + * { margin-top: 1.1rem; }
     .cover-logo {
       width: 56px; height: 56px;
       background: #0068ff;
       border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
+      display: block;
+      line-height: 56px;
+      text-align: center;
     }
-    .cover-logo svg { width: 28px; height: 28px; }
+    .cover-logo svg { width: 28px; height: 28px; vertical-align: middle; }
     .cover h1 { font-size: 28px; font-weight: 900; color: #111827; }
     .cover .sub { font-size: 15px; color: #6b7280; }
     .cover .badge {
